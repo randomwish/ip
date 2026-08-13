@@ -2,8 +2,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Bro {
-    static ArrayList<String> userTasks = new ArrayList<>();
-
+    static ArrayList<Task> userTasks = new ArrayList<>();
     public static void main(String[] args) {
         String banner = "  ____                \n"
                 + " | __ )  _ __   ___   \n"
@@ -21,8 +20,9 @@ public class Bro {
                     System.out.println((i + 1) + ". " + userTasks.get(i));
                 }
             } else {
-                userTasks.add(userInput);
-                System.out.println(userInput);
+                Task t = new Task(userInput);
+                userTasks.add(t);
+                System.out.println(t.description);
             }
             userInput = scanner.nextLine();
         }
