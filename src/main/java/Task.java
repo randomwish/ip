@@ -10,4 +10,9 @@ public class Task {
     public String showDone() {
         return (isDone ? "X" : " "); // mark done task with X
     }
+
+    public String toString() {
+        return "[" + this.showDone() + "] " + this.description;
+    }
 }
+

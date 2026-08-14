@@ -19,7 +19,7 @@ public class Bro {
             String actionWord = userInput.trim().split("\\s+", 2)[0];
             if (actionWord.equals("list")) {
                 for (int i = 0; i < userTasks.size(); i++) {
-                    System.out.println((i + 1) + ". " + "[" + userTasks.get(i).showDone() + "] " + userTasks.get(i).description);
+                    System.out.println((i + 1) + ". " + userTasks.get(i).toString());;
                 }
             }
             else if (actionWord.equals("mark")) {
