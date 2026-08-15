@@ -8,5 +8,10 @@ public class Events extends Task {
         this.startTime = startTIme;
     }
 
+    @Override
+    public String toString() {
+        return "[" + this.modifier + "] " + "[" + this.showDone() + "] " + this.description + "(from: " + this.startTime
+                + " to: " + this.dateline + ")";
+    }
 
 }

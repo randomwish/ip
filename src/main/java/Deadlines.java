@@ -8,6 +8,6 @@ public class Deadlines extends Task{
 
     @Override
     public String toString() {
-        return "[" + this.modifier + "] " + "[" + this.showDone() + "] " + this.description;
+        return "[" + this.modifier + "] " + "[" + this.showDone() + "] " + this.description + "(by: " + this.dateline +")";
     }
 }
