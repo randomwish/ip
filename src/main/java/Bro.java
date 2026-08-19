@@ -51,6 +51,9 @@ public class Bro {
         case "unmark":
             changeTaskStatus(commandParts, false);
             break;
+        case "delete":
+            deleteTask(commandParts);
+            break;
         case "todo":
             addTodo(commandParts);
             break;
@@ -62,7 +65,7 @@ public class Bro {
             break;
         default:
             throw new BroException("I don't recognize that command. Try todo, deadline, event, "
-                    + "list, mark, unmark, or bye.");
+                    + "list, mark, unmark, delete, or bye.");
         }
     }
 
@@ -122,6 +125,25 @@ public class Bro {
     /** Marks or unmarks the requested task after validating its index. */
     private static void changeTaskStatus(String[] commandParts, boolean done) throws BroException {
         String operation = done ? "mark" : "unmark";
+        int index = getTaskIndex(commandParts, operation);
+
+        Task chosenTask = userTasks.get(index - 1);
+        chosenTask.isDone = done;
+        System.out.println(done ? "Ok this item is marked!" : "Ok this item is not marked!");
+        System.out.println("[" + chosenTask.showDone() + "] " + chosenTask.description);
+    }
+
+    /** Removes the requested task and reports the remaining list size. */
+    private static void deleteTask(String[] commandParts) throws BroException {
+        int index = getTaskIndex(commandParts, "delete");
+        Task removedTask = userTasks.remove(index - 1);
+        System.out.println("Noted. I've removed:");
+        System.out.println(removedTask);
+        System.out.println("Now you have " + userTasks.size() + " tasks in the list");
+    }
+
+    /** Parses and validates a task index shared by mark, unmark, and delete. */
+    private static int getTaskIndex(String[] commandParts, String operation) throws BroException {
         String argument = requireArgument(commandParts, "Use: " + operation + " <task number>.");
         if (argument.split("\\s+").length != 1) {
             throw new BroException("Use: " + operation + " <task number>.");
@@ -142,11 +164,7 @@ public class Bro {
         if (index > userTasks.size()) {
             throw new BroException("Task number must be between 1 and " + userTasks.size() + ".");
         }
-
-        Task chosenTask = userTasks.get(index - 1);
-        chosenTask.isDone = done;
-        System.out.println(done ? "Ok this item is marked!" : "Ok this item is not marked!");
-        System.out.println("[" + chosenTask.showDone() + "] " + chosenTask.description);
+        return index;
     }
 
     /** Returns a required command argument or throws an exception with its usage hint. */
