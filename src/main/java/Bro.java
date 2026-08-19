@@ -1,3 +1,7 @@
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -5,18 +9,26 @@ import java.util.Scanner;
 public class Bro {
     private static final ArrayList<Task> userTasks = new ArrayList<>();
     private static final String ERROR_BORDER = "    ____________________________________________________________";
+    private static final Path SAVE_FILE = Path.of("data", "duke,txt");
 
     /** Starts a session, processing commands until the user says goodbye or closes the input. */
-    public static void main(String[] args) {
-        String banner = "  ____                \n"
-                + " | __ )  _ __   ___   \n"
-                + " |  _ \\ | '__| / _ \\ \n"
-                + " | |_) || |   | (_) | \n"
-                + " |____/ |_|    \\___/  \n";
+     static void main(String[] args) {
+        String banner = """
+                  ____               \s
+                 | __ )  _ __   ___  \s
+                 |  _ \\ | '__| / _ \\\s
+                 | |_) || |   | (_) |\s
+                 |____/ |_|    \\___/ \s
+                """;
         Scanner scanner = new Scanner(System.in);
         System.out.println(banner);
         System.out.println("Hello, I'm Bro! What drink do you want?");
-
+        try {
+            loadTasks();
+        } catch (BroException exception) {
+            printError(exception.getMessage());
+        }
+        // Level 7 - Start the saving mechanisms
         while (scanner.hasNextLine()) {
             String userInput = scanner.nextLine().trim();
             if (userInput.equalsIgnoreCase("bye")) {
@@ -82,9 +94,12 @@ public class Bro {
                 + "Try: todo <description>.");
         ToDos newToDo = new ToDos(description);
         userTasks.add(newToDo);
+        saveTasks();
         System.out.println("Got it. I've added: \n");
         System.out.println(newToDo);
         System.out.println("Now you have" + userTasks.size() + " tasks in the list");
+
+        // Level 7 - Saving
     }
 
     /** Adds a deadline after validating its description and /by component. */
@@ -97,6 +112,7 @@ public class Bro {
 
         Deadlines newDeadline = new Deadlines(parts[1].trim(), parts[0].trim());
         userTasks.add(newDeadline);
+        saveTasks();
         System.out.println("Got it. I've added: \n");
         System.out.println(newDeadline);
         System.out.println("Now you have " + userTasks.size() + " tasks in the list");
@@ -117,6 +133,7 @@ public class Bro {
 
         Events newEvent = new Events(toSplit[0].trim(), toSplit[1].trim(), fromSplit[0].trim());
         userTasks.add(newEvent);
+        saveTasks();
         System.out.println("Got it. I've added: \n");
         System.out.println(newEvent);
         System.out.println("Now you have " + userTasks.size() + " tasks in the list");
@@ -188,5 +205,78 @@ public class Bro {
         System.out.println(ERROR_BORDER);
         System.out.println("     " + message);
         System.out.println(ERROR_BORDER);
+    }
+
+    /** Transforms tasks in TaskList to a format for the saved file **/
+    private static String toFileLine(Task task) {
+        String done = task.isDone ? "1" : "0";
+
+        if (task instanceof ToDos) {
+            return "T | " + done + " | " + task.description;
+        }
+
+        if (task instanceof Deadlines deadline) {
+            return "D | " + done + " | " + task.description + " | " + deadline.dateline;
+        }
+
+        Events event = (Events) task;
+        return "E | " + done + " | " + task.description
+                + " | " + event.startTime + " | " + event.dateline;
+    }
+
+    /** Writes the tasks from the saved files to the TaskList**/
+    private static Task fromFileLine(String line) throws BroException {
+        String[] parts = line.split(" \\| ", -1);
+
+        if (parts.length < 3 || (!parts[1].equals("0") && !parts[1].equals("1"))) {
+            throw new BroException("A saved task has an invalid format.");
+        }
+
+        Task task;
+        if (parts[0].equals("T") && parts.length == 3) {
+            task = new ToDos(parts[2]);
+        } else if (parts[0].equals("D") && parts.length == 4) {
+            task = new Deadlines(parts[3], parts[2]);
+        } else if (parts[0].equals("E") && parts.length == 5) {
+            task = new Events(parts[3], parts[4], parts[2]);
+        } else {
+            throw new BroException("A saved task has an invalid format.");
+        }
+
+        task.isDone = parts[1].equals("1");
+        return task;
+    }
+
+    /** Saves tasks that have been written by the user **/
+    private static void saveTasks() throws BroException {
+        try {
+            Files.createDirectories(SAVE_FILE.getParent());
+
+            ArrayList<String> lines = new ArrayList<>();
+            for (Task task : userTasks) {
+                lines.add(toFileLine(task));
+            }
+
+            Files.write(SAVE_FILE, lines, StandardCharsets.UTF_8);
+        } catch (IOException exception) {
+            throw new BroException("I could not save your tasks.");
+        }
+    }
+
+    /** Loads tasks if there is a txt file in the data directory **/
+    public static void loadTasks() throws BroException {
+        if (!Files.exists(SAVE_FILE)) {
+            return; // First run: there is nothing to load yet.
+        }
+
+        try {
+            for (String line : Files.readAllLines(SAVE_FILE, StandardCharsets.UTF_8)) {
+                if (!line.isBlank()) {
+                    userTasks.add(fromFileLine(line));
+                }
+            }
+        } catch (IOException exception) {
+            throw new BroException("I could not load your saved tasks.");
+        }
     }
 }
