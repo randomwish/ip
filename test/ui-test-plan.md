@@ -156,3 +156,235 @@ Ok this item is marked!
 1. [T] [X] read book
 Goodbye!
 ```
+
+## Test case: empty-todo
+
+**Aim:** Verify that an empty todo is rejected and the session continues.
+
+**Run command:** `java -cp out/production Bro`
+
+**Inputs:**
+```text
+todo
+list
+bye
+```
+
+**Expected output:**
+```text
+  ____                
+ | __ )  _ __   ___   
+ |  _ \ | '__| / _ \ 
+ | |_) || |   | (_) | 
+ |____/ |_|    \___/  
+
+Hello, I'm Bro! What drink do you want?
+    ____________________________________________________________
+     A todo needs a description. Try: todo <description>.
+    ____________________________________________________________
+Goodbye!
+```
+
+## Test case: unknown-command
+
+**Aim:** Verify that an unrecognised command is rejected without terminating Bro.
+
+**Run command:** `java -cp out/production Bro`
+
+**Inputs:**
+```text
+blah
+bye
+```
+
+**Expected output:**
+```text
+  ____                
+ | __ )  _ __   ___   
+ |  _ \ | '__| / _ \ 
+ | |_) || |   | (_) | 
+ |____/ |_|    \___/  
+
+Hello, I'm Bro! What drink do you want?
+    ____________________________________________________________
+     I don't recognize that command. Try todo, deadline, event, list, mark, unmark, or bye.
+    ____________________________________________________________
+Goodbye!
+```
+
+## Test case: malformed-deadline
+
+**Aim:** Verify that a deadline without a /by date gives a useful usage hint.
+
+**Run command:** `java -cp out/production Bro`
+
+**Inputs:**
+```text
+deadline submit report
+bye
+```
+
+**Expected output:**
+```text
+  ____                
+ | __ )  _ __   ___   
+ |  _ \ | '__| / _ \ 
+ | |_) || |   | (_) | 
+ |____/ |_|    \___/  
+
+Hello, I'm Bro! What drink do you want?
+    ____________________________________________________________
+     Use: deadline <description> /by <date>.
+    ____________________________________________________________
+Goodbye!
+```
+
+## Test case: malformed-event
+
+**Aim:** Verify that an event missing its /to component gives a useful usage hint.
+
+**Run command:** `java -cp out/production Bro`
+
+**Inputs:**
+```text
+event team sync /from 2pm
+bye
+```
+
+**Expected output:**
+```text
+  ____                
+ | __ )  _ __   ___   
+ |  _ \ | '__| / _ \ 
+ | |_) || |   | (_) | 
+ |____/ |_|    \___/  
+
+Hello, I'm Bro! What drink do you want?
+    ____________________________________________________________
+     Use: event <description> /from <start> /to <end>.
+    ____________________________________________________________
+Goodbye!
+```
+
+## Test case: invalid-mark-index
+
+**Aim:** Verify that a non-numeric mark index is reported clearly.
+
+**Run command:** `java -cp out/production Bro`
+
+**Inputs:**
+```text
+todo read book
+mark abc
+bye
+```
+
+**Expected output:**
+```text
+  ____                
+ | __ )  _ __   ___   
+ |  _ \ | '__| / _ \ 
+ | |_) || |   | (_) | 
+ |____/ |_|    \___/  
+
+Hello, I'm Bro! What drink do you want?
+Got it. I've added: 
+
+[T] [ ] read book
+Now you have1 tasks in the list
+    ____________________________________________________________
+     Task number must be a positive whole number.
+    ____________________________________________________________
+Goodbye!
+```
+
+## Test case: out-of-range-mark
+
+**Aim:** Verify that a mark index outside the task list is rejected.
+
+**Run command:** `java -cp out/production Bro`
+
+**Inputs:**
+```text
+todo read book
+mark 2
+bye
+```
+
+**Expected output:**
+```text
+  ____                
+ | __ )  _ __   ___   
+ |  _ \ | '__| / _ \ 
+ | |_) || |   | (_) | 
+ |____/ |_|    \___/  
+
+Hello, I'm Bro! What drink do you want?
+Got it. I've added: 
+
+[T] [ ] read book
+Now you have1 tasks in the list
+    ____________________________________________________________
+     Task number must be between 1 and 1.
+    ____________________________________________________________
+Goodbye!
+```
+
+## Test case: invalid-unmark-index
+
+**Aim:** Verify that unmark validates its task index too.
+
+**Run command:** `java -cp out/production Bro`
+
+**Inputs:**
+```text
+todo read book
+unmark two
+bye
+```
+
+**Expected output:**
+```text
+  ____                
+ | __ )  _ __   ___   
+ |  _ \ | '__| / _ \ 
+ | |_) || |   | (_) | 
+ |____/ |_|    \___/  
+
+Hello, I'm Bro! What drink do you want?
+Got it. I've added: 
+
+[T] [ ] read book
+Now you have1 tasks in the list
+    ____________________________________________________________
+     Task number must be a positive whole number.
+    ____________________________________________________________
+Goodbye!
+```
+
+## Test case: blank-command
+
+**Aim:** Verify that a blank line is handled as invalid input rather than a task.
+
+**Run command:** `java -cp out/production Bro`
+
+**Inputs:**
+```text
+
+bye
+```
+
+**Expected output:**
+```text
+  ____                
+ | __ )  _ __   ___   
+ |  _ \ | '__| / _ \ 
+ | |_) || |   | (_) | 
+ |____/ |_|    \___/  
+
+Hello, I'm Bro! What drink do you want?
+    ____________________________________________________________
+     Please enter a command.
+    ____________________________________________________________
+Goodbye!
+```
