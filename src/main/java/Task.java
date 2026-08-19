@@ -1,18 +1,34 @@
+/** Represents a task and its completion status. */
 public class Task {
     protected String description;
     protected boolean isDone;
+    protected final TaskType taskType;
 
+    /** Creates a basic task, treated as a todo for display purposes. */
     public Task(String description) {
-        this.description = description;
-        this.isDone = false;
+        this(description, TaskType.TODO);
     }
 
+    /** Creates a task with the given description and category. */
+    protected Task(String description, TaskType taskType) {
+        this.description = description;
+        this.isDone = false;
+        this.taskType = taskType;
+    }
+
+    /** Returns X for a completed task and a blank space otherwise. */
     public String showDone() {
         return (isDone ? "X" : " "); // mark done task with X
     }
 
+    /** Formats the task category, completion state, and description. */
+    protected String formatTask(String taskDetails) {
+        return "[" + taskType.getDisplayCode() + "] [" + showDone() + "] " + taskDetails;
+    }
+
+    /** Returns the task in the format shown by Bro's list command. */
+    @Override
     public String toString() {
-        return "[" + this.showDone() + "] " + this.description;
+        return formatTask(description);
     }
 }
-
