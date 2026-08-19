@@ -1,17 +1,19 @@
+/** Represents a task that occurs between a start and end time. */
 public class Events extends Task {
     protected String dateline;
     protected String startTime;
-    protected String modifier = "E";
+
+    /** Creates an event task with its start time, end time, and description. */
     public Events(String startTIme, String deadline, String description) {
-        super(description);
+        super(description, TaskType.EVENT);
         this.dateline = deadline;
         this.startTime = startTIme;
     }
 
+    /** Returns the event task in Bro's list format. */
     @Override
     public String toString() {
-        return "[" + this.modifier + "] " + "[" + this.showDone() + "] " + this.description + "(from: " + this.startTime
-                + " to: " + this.dateline + ")";
+        return formatTask(description + "(from: " + startTime + " to: " + dateline + ")");
     }
 
 }
