@@ -10,12 +10,14 @@ stops as soon as one case fails.
 - **Timeout seconds:** `5`
 - **Output matching:** Exact, including blank lines and spaces. Line-ending
   differences between Windows and Unix are ignored.
+- **Path placeholders:** `{workspace}` expands to the repository's absolute path and
+  `{test_dir}` expands to an isolated temporary working directory for that case.
 
 ## Test case: greeting-and-exit
 
 **Aim:** Verify that the application shows its greeting and exits cleanly.
 
-**Run command:** `java -cp out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
 
 **Inputs:**
 ```text
@@ -38,7 +40,7 @@ Goodbye!
 
 **Aim:** Verify that a todo command adds a task and list displays it.
 
-**Run command:** `java -cp out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
 
 **Inputs:**
 ```text
@@ -66,13 +68,13 @@ Goodbye!
 
 ## Test case: deadline-add-and-list
 
-**Aim:** Verify that a deadline command stores and lists its description and due time.
+**Aim:** Verify that a deadline command stores an ISO date and displays it in a friendly format.
 
-**Run command:** `java -cp out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
 
 **Inputs:**
 ```text
-deadline submit report /by Friday
+deadline submit report /by 2019-10-15
 list
 bye
 ```
@@ -88,9 +90,39 @@ bye
 Hello, I'm Bro! What drink do you want?
 Got it. I've added: 
 
-[D] [ ] submit report(by: Friday)
+[D] [ ] submit report(by: Oct 15 2019)
 Now you have 1 tasks in the list
-1. [D] [ ] submit report(by: Friday)
+1. [D] [ ] submit report(by: Oct 15 2019)
+Goodbye!
+```
+
+## Test case: deadline-date-time-add-and-list
+
+**Aim:** Verify that a day/month/year deadline time is parsed and displayed in a friendly format.
+
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+
+**Inputs:**
+```text
+deadline return book /by 2/12/2019 1800
+list
+bye
+```
+
+**Expected output:**
+```text
+  ____                
+ | __ )  _ __   ___   
+ |  _ \ | '__| / _ \ 
+ | |_) || |   | (_) | 
+ |____/ |_|    \___/  
+
+Hello, I'm Bro! What drink do you want?
+Got it. I've added: 
+
+[D] [ ] return book(by: Dec 2 2019 6:00PM)
+Now you have 1 tasks in the list
+1. [D] [ ] return book(by: Dec 2 2019 6:00PM)
 Goodbye!
 ```
 
@@ -98,7 +130,7 @@ Goodbye!
 
 **Aim:** Verify that an event command stores and lists both event times.
 
-**Run command:** `java -cp out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
 
 **Inputs:**
 ```text
@@ -128,7 +160,7 @@ Goodbye!
 
 **Aim:** Verify that mark changes the selected todo and list shows it as complete.
 
-**Run command:** `java -cp out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
 
 **Inputs:**
 ```text
@@ -161,7 +193,7 @@ Goodbye!
 
 **Aim:** Verify that an empty todo is rejected and the session continues.
 
-**Run command:** `java -cp out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
 
 **Inputs:**
 ```text
@@ -189,7 +221,7 @@ Goodbye!
 
 **Aim:** Verify that an unrecognised command is rejected without terminating Bro.
 
-**Run command:** `java -cp out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
 
 **Inputs:**
 ```text
@@ -216,7 +248,7 @@ Goodbye!
 
 **Aim:** Verify that a deadline without a /by date gives a useful usage hint.
 
-**Run command:** `java -cp out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
 
 **Inputs:**
 ```text
@@ -234,7 +266,34 @@ bye
 
 Hello, I'm Bro! What drink do you want?
     ____________________________________________________________
-     Use: deadline <description> /by <date>.
+     Use: deadline <description> /by <yyyy-MM-dd> or <d/M/yyyy HHmm>.
+    ____________________________________________________________
+Goodbye!
+```
+
+## Test case: invalid-deadline-date
+
+**Aim:** Verify that an invalid calendar date is rejected without adding a task.
+
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+
+**Inputs:**
+```text
+deadline return book /by 31/2/2019 1800
+bye
+```
+
+**Expected output:**
+```text
+  ____                
+ | __ )  _ __   ___   
+ |  _ \ | '__| / _ \ 
+ | |_) || |   | (_) | 
+ |____/ |_|    \___/  
+
+Hello, I'm Bro! What drink do you want?
+    ____________________________________________________________
+     Use: deadline <description> /by <yyyy-MM-dd> or <d/M/yyyy HHmm>.
     ____________________________________________________________
 Goodbye!
 ```
@@ -243,7 +302,7 @@ Goodbye!
 
 **Aim:** Verify that an event missing its /to component gives a useful usage hint.
 
-**Run command:** `java -cp out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
 
 **Inputs:**
 ```text
@@ -270,7 +329,7 @@ Goodbye!
 
 **Aim:** Verify that a non-numeric mark index is reported clearly.
 
-**Run command:** `java -cp out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
 
 **Inputs:**
 ```text
@@ -302,7 +361,7 @@ Goodbye!
 
 **Aim:** Verify that a mark index outside the task list is rejected.
 
-**Run command:** `java -cp out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
 
 **Inputs:**
 ```text
@@ -334,7 +393,7 @@ Goodbye!
 
 **Aim:** Verify that unmark validates its task index too.
 
-**Run command:** `java -cp out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
 
 **Inputs:**
 ```text
@@ -366,7 +425,7 @@ Goodbye!
 
 **Aim:** Verify that a blank line is handled as invalid input rather than a task.
 
-**Run command:** `java -cp out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
 
 **Inputs:**
 ```text
@@ -393,12 +452,12 @@ Goodbye!
 
 **Aim:** Verify that delete removes the selected task and renumbers the remaining list.
 
-**Run command:** `java -cp out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
 
 **Inputs:**
 ```text
 todo read book
-deadline return book /by June 6th
+deadline return book /by 2019-06-06
 event project meeting /from Aug 6th 2pm /to 4pm
 delete 2
 list
@@ -420,14 +479,14 @@ Got it. I've added:
 Now you have1 tasks in the list
 Got it. I've added: 
 
-[D] [ ] return book(by: June 6th)
+[D] [ ] return book(by: Jun 6 2019)
 Now you have 2 tasks in the list
 Got it. I've added: 
 
 [E] [ ] project meeting(from: Aug 6th 2pm to: 4pm)
 Now you have 3 tasks in the list
 Noted. I've removed:
-[D] [ ] return book(by: June 6th)
+[D] [ ] return book(by: Jun 6 2019)
 Now you have 2 tasks in the list
 1. [T] [ ] read book
 2. [E] [ ] project meeting(from: Aug 6th 2pm to: 4pm)
@@ -438,7 +497,7 @@ Goodbye!
 
 **Aim:** Verify that delete without a task number gives a usage hint.
 
-**Run command:** `java -cp out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
 
 **Inputs:**
 ```text
@@ -470,7 +529,7 @@ Goodbye!
 
 **Aim:** Verify that delete rejects an index beyond the current task list.
 
-**Run command:** `java -cp out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
 
 **Inputs:**
 ```text
@@ -502,7 +561,7 @@ Goodbye!
 
 **Aim:** Verify that delete on an empty list reports the problem without crashing.
 
-**Run command:** `java -cp out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
 
 **Inputs:**
 ```text

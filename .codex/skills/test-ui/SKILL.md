@@ -21,6 +21,18 @@ Keep the following information in `test/ui-test-plan.md`:
 Use fenced code blocks for inputs and expected output. Each case starts the
 program in a fresh process, so do not rely on state from an earlier case.
 
+When the application writes relative-path data, use these placeholders in the
+run command to isolate that data for each case:
+
+```markdown
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+```
+
+The runner substitutes `{workspace}` with the repository's absolute path and
+`{test_dir}` with a fresh temporary directory. This keeps the application code
+using its normal relative path while preventing one test case's saved data from
+affecting another.
+
 ```markdown
 ## Test environment
 

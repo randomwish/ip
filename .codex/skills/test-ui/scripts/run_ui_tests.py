@@ -6,8 +6,10 @@ from __future__ import annotations
 import argparse
 import difflib
 import re
+import shlex
 import subprocess
 import sys
+import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -164,6 +166,20 @@ def run_command(command: str, inputs: str, timeout_seconds: float, workspace: Pa
     return CommandResult(normalize_newlines(completed.stdout), completed.returncode, False)
 
 
+def quote_path(path: Path) -> str:
+    """Quote a path for the shell that runs the test command on the current platform."""
+    path_text = str(path)
+    return subprocess.list2cmdline([path_text]) if sys.platform == "win32" else shlex.quote(path_text)
+
+
+def expand_command(command: str, workspace: Path, test_directory: Path) -> str:
+    """Replace supported path placeholders with shell-safe absolute paths."""
+    return (
+        command.replace("{workspace}", quote_path(workspace))
+        .replace("{test_dir}", quote_path(test_directory))
+    )
+
+
 def show_text(text: str) -> None:
     """Print text exactly once, including a final newline when needed."""
     if not text:
@@ -216,30 +232,32 @@ def run_setup(plan: TestPlan, workspace: Path) -> bool:
 
 def run_case(case: TestCase, timeout_seconds: float, workspace: Path) -> bool:
     """Run one test case and display a full transcript and failure diagnostics."""
-    print(f"=== Test case: {case.name} ===")
-    print(f"Aim: {case.aim}")
-    show_input(case.command, case.inputs)
-    result = run_command(case.command, case.inputs, timeout_seconds, workspace)
-    print("Console output:")
-    show_text(result.output)
+    with tempfile.TemporaryDirectory(prefix="console-ui-test-") as temporary_directory:
+        command = expand_command(case.command, workspace, Path(temporary_directory))
+        print(f"=== Test case: {case.name} ===")
+        print(f"Aim: {case.aim}")
+        show_input(command, case.inputs)
+        result = run_command(command, case.inputs, timeout_seconds, workspace)
+        print("Console output:")
+        show_text(result.output)
 
-    output_matches = result.output == case.expected_output
-    if not result.timed_out and result.return_code == 0 and output_matches:
-        print("Result: PASS")
-        return True
+        output_matches = result.output == case.expected_output
+        if not result.timed_out and result.return_code == 0 and output_matches:
+            print("Result: PASS")
+            return True
 
-    print("Result: FAIL — stopping the test session immediately.")
-    if result.timed_out:
-        print(f"The program timed out after {timeout_seconds:g} seconds.")
-    else:
-        print(f"Program exit status: {result.return_code}")
-    print("Expected console output:")
-    show_text(case.expected_output)
-    print("Actual console output:")
-    show_text(result.output)
-    if not output_matches:
-        show_difference(case.expected_output, result.output)
-    return False
+        print("Result: FAIL — stopping the test session immediately.")
+        if result.timed_out:
+            print(f"The program timed out after {timeout_seconds:g} seconds.")
+        else:
+            print(f"Program exit status: {result.return_code}")
+        print("Expected console output:")
+        show_text(case.expected_output)
+        print("Actual console output:")
+        show_text(result.output)
+        if not output_matches:
+            show_difference(case.expected_output, result.output)
+        return False
 
 
 def main() -> int:

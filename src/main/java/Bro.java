@@ -2,6 +2,11 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -9,10 +14,16 @@ import java.util.Scanner;
 public class Bro {
     private static final ArrayList<Task> userTasks = new ArrayList<>();
     private static final String ERROR_BORDER = "    ____________________________________________________________";
-    private static final Path SAVE_FILE = Path.of("data", "duke,txt");
+    private static final Path SAVE_FILE = Path.of("data", "duke.txt");
+    private static final DateTimeFormatter DATE_INPUT_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE;
+    private static final DateTimeFormatter DATE_TIME_INPUT_FORMAT = DateTimeFormatter
+            .ofPattern("d/M/uuuu HHmm")
+            .withResolverStyle(ResolverStyle.STRICT);
+    private static final String DEADLINE_USAGE = "Use: deadline <description> /by <yyyy-MM-dd> "
+            + "or <d/M/yyyy HHmm>.";
 
     /** Starts a session, processing commands until the user says goodbye or closes the input. */
-     static void main(String[] args) {
+    public static void main(String[] args) {
         String banner = """
                   ____               \s
                  | __ )  _ __   ___  \s
@@ -104,18 +115,40 @@ public class Bro {
 
     /** Adds a deadline after validating its description and /by component. */
     private static void addDeadline(String[] commandParts) throws BroException {
-        String rest = requireArgument(commandParts, "Use: deadline <description> /by <date>.");
+        String rest = requireArgument(commandParts, DEADLINE_USAGE);
         String[] parts = rest.split("\\s*/by\\s*", -1);
         if (parts.length != 2 || parts[0].isBlank() || parts[1].isBlank()) {
-            throw new BroException("Use: deadline <description> /by <date>.");
+            throw new BroException(DEADLINE_USAGE);
         }
 
-        Deadlines newDeadline = new Deadlines(parts[1].trim(), parts[0].trim());
+        Deadlines newDeadline = createDeadline(parts[1].trim(), parts[0].trim());
         userTasks.add(newDeadline);
         saveTasks();
         System.out.println("Got it. I've added: \n");
         System.out.println(newDeadline);
         System.out.println("Now you have " + userTasks.size() + " tasks in the list");
+    }
+
+    /**
+     * Creates a deadline from either an ISO date or the assignment's day/month/year time format.
+     *
+     * @param dueText text following the command's {@code /by} marker
+     * @param description task description supplied before the marker
+     * @return a deadline that retains whether the user supplied a time
+     * @throws BroException if the date or time does not match a supported, valid format
+     */
+    private static Deadlines createDeadline(String dueText, String description) throws BroException {
+        try {
+            LocalDateTime dueDateTime = LocalDateTime.parse(dueText, DATE_TIME_INPUT_FORMAT);
+            return new Deadlines(dueDateTime, description);
+        } catch (DateTimeParseException ignored) {
+            try {
+                LocalDate dueDate = LocalDate.parse(dueText, DATE_INPUT_FORMAT);
+                return new Deadlines(dueDate, description);
+            } catch (DateTimeParseException exception) {
+                throw new BroException(DEADLINE_USAGE);
+            }
+        }
     }
 
     /** Adds an event after validating its description, start, and end components. */
@@ -146,6 +179,7 @@ public class Bro {
 
         Task chosenTask = userTasks.get(index - 1);
         chosenTask.isDone = done;
+        saveTasks();
         System.out.println(done ? "Ok this item is marked!" : "Ok this item is not marked!");
         System.out.println("[" + chosenTask.showDone() + "] " + chosenTask.description);
     }
@@ -154,6 +188,7 @@ public class Bro {
     private static void deleteTask(String[] commandParts) throws BroException {
         int index = getTaskIndex(commandParts, "delete");
         Task removedTask = userTasks.remove(index - 1);
+        saveTasks();
         System.out.println("Noted. I've removed:");
         System.out.println(removedTask);
         System.out.println("Now you have " + userTasks.size() + " tasks in the list");
@@ -207,7 +242,7 @@ public class Bro {
         System.out.println(ERROR_BORDER);
     }
 
-    /** Transforms tasks in TaskList to a format for the saved file **/
+    /** Converts a task to one line in Bro's saved task-file format. */
     private static String toFileLine(Task task) {
         String done = task.isDone ? "1" : "0";
 
@@ -216,7 +251,8 @@ public class Bro {
         }
 
         if (task instanceof Deadlines deadline) {
-            return "D | " + done + " | " + task.description + " | " + deadline.dateline;
+            return "D | " + done + " | " + task.description + " | "
+                    + deadline.getDueDateTime() + " | " + (deadline.hasDueTime() ? "1" : "0");
         }
 
         Events event = (Events) task;
@@ -224,7 +260,7 @@ public class Bro {
                 + " | " + event.startTime + " | " + event.dateline;
     }
 
-    /** Writes the tasks from the saved files to the TaskList**/
+    /** Recreates one task from a line in Bro's saved task-file format. */
     private static Task fromFileLine(String line) throws BroException {
         String[] parts = line.split(" \\| ", -1);
 
@@ -235,8 +271,8 @@ public class Bro {
         Task task;
         if (parts[0].equals("T") && parts.length == 3) {
             task = new ToDos(parts[2]);
-        } else if (parts[0].equals("D") && parts.length == 4) {
-            task = new Deadlines(parts[3], parts[2]);
+        } else if (parts[0].equals("D") && parts.length == 5) {
+            task = readDeadline(parts);
         } else if (parts[0].equals("E") && parts.length == 5) {
             task = new Events(parts[3], parts[4], parts[2]);
         } else {
@@ -247,7 +283,21 @@ public class Bro {
         return task;
     }
 
-    /** Saves tasks that have been written by the user **/
+    /** Recreates a deadline from its ISO-8601 date-time and time-presence flag. */
+    private static Deadlines readDeadline(String[] parts) throws BroException {
+        if (!parts[4].equals("0") && !parts[4].equals("1")) {
+            throw new BroException("A saved task has an invalid format.");
+        }
+
+        try {
+            LocalDateTime dueDateTime = LocalDateTime.parse(parts[3]);
+            return new Deadlines(dueDateTime, parts[4].equals("1"), parts[2]);
+        } catch (DateTimeParseException exception) {
+            throw new BroException("A saved task has an invalid format.");
+        }
+    }
+
+    /** Saves the complete task list after a successful change. */
     private static void saveTasks() throws BroException {
         try {
             Files.createDirectories(SAVE_FILE.getParent());
@@ -263,8 +313,8 @@ public class Bro {
         }
     }
 
-    /** Loads tasks if there is a txt file in the data directory **/
-    public static void loadTasks() throws BroException {
+    /** Loads saved tasks when the data file exists on startup. */
+    private static void loadTasks() throws BroException {
         if (!Files.exists(SAVE_FILE)) {
             return; // First run: there is nothing to load yet.
         }
