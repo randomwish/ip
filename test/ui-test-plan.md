@@ -207,7 +207,7 @@ bye
 
 Hello, I'm Bro! What drink do you want?
     ____________________________________________________________
-     I don't recognize that command. Try todo, deadline, event, list, mark, unmark, or bye.
+     I don't recognize that command. Try todo, deadline, event, list, mark, unmark, delete, or bye.
     ____________________________________________________________
 Goodbye!
 ```
@@ -385,6 +385,142 @@ bye
 Hello, I'm Bro! What drink do you want?
     ____________________________________________________________
      Please enter a command.
+    ____________________________________________________________
+Goodbye!
+```
+
+## Test case: delete-middle-task
+
+**Aim:** Verify that delete removes the selected task and renumbers the remaining list.
+
+**Run command:** `java -cp out/production Bro`
+
+**Inputs:**
+```text
+todo read book
+deadline return book /by June 6th
+event project meeting /from Aug 6th 2pm /to 4pm
+delete 2
+list
+bye
+```
+
+**Expected output:**
+```text
+  ____                
+ | __ )  _ __   ___   
+ |  _ \ | '__| / _ \ 
+ | |_) || |   | (_) | 
+ |____/ |_|    \___/  
+
+Hello, I'm Bro! What drink do you want?
+Got it. I've added: 
+
+[T] [ ] read book
+Now you have1 tasks in the list
+Got it. I've added: 
+
+[D] [ ] return book(by: June 6th)
+Now you have 2 tasks in the list
+Got it. I've added: 
+
+[E] [ ] project meeting(from: Aug 6th 2pm to: 4pm)
+Now you have 3 tasks in the list
+Noted. I've removed:
+[D] [ ] return book(by: June 6th)
+Now you have 2 tasks in the list
+1. [T] [ ] read book
+2. [E] [ ] project meeting(from: Aug 6th 2pm to: 4pm)
+Goodbye!
+```
+
+## Test case: delete-missing-index
+
+**Aim:** Verify that delete without a task number gives a usage hint.
+
+**Run command:** `java -cp out/production Bro`
+
+**Inputs:**
+```text
+todo read book
+delete
+bye
+```
+
+**Expected output:**
+```text
+  ____                
+ | __ )  _ __   ___   
+ |  _ \ | '__| / _ \ 
+ | |_) || |   | (_) | 
+ |____/ |_|    \___/  
+
+Hello, I'm Bro! What drink do you want?
+Got it. I've added: 
+
+[T] [ ] read book
+Now you have1 tasks in the list
+    ____________________________________________________________
+     Use: delete <task number>.
+    ____________________________________________________________
+Goodbye!
+```
+
+## Test case: delete-out-of-range
+
+**Aim:** Verify that delete rejects an index beyond the current task list.
+
+**Run command:** `java -cp out/production Bro`
+
+**Inputs:**
+```text
+todo read book
+delete 2
+bye
+```
+
+**Expected output:**
+```text
+  ____                
+ | __ )  _ __   ___   
+ |  _ \ | '__| / _ \ 
+ | |_) || |   | (_) | 
+ |____/ |_|    \___/  
+
+Hello, I'm Bro! What drink do you want?
+Got it. I've added: 
+
+[T] [ ] read book
+Now you have1 tasks in the list
+    ____________________________________________________________
+     Task number must be between 1 and 1.
+    ____________________________________________________________
+Goodbye!
+```
+
+## Test case: delete-empty-list
+
+**Aim:** Verify that delete on an empty list reports the problem without crashing.
+
+**Run command:** `java -cp out/production Bro`
+
+**Inputs:**
+```text
+delete 1
+bye
+```
+
+**Expected output:**
+```text
+  ____                
+ | __ )  _ __   ___   
+ |  _ \ | '__| / _ \ 
+ | |_) || |   | (_) | 
+ |____/ |_|    \___/  
+
+Hello, I'm Bro! What drink do you want?
+    ____________________________________________________________
+     There are no tasks to delete yet.
     ____________________________________________________________
 Goodbye!
 ```
