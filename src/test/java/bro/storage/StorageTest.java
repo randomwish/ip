@@ -1,14 +1,17 @@
 package bro.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import bro.exception.BroException;
 import bro.task.Deadlines;
+import bro.task.Events;
 import bro.task.TaskList;
 import bro.task.ToDos;
 import org.junit.jupiter.api.Test;
@@ -46,5 +49,34 @@ class StorageTest {
         TaskList tasks = storage.load();
 
         assertTrue(tasks.isEmpty());
+    }
+
+    /** Saving and loading preserves event fields and a deadline time. */
+    @Test
+    void saveAndLoad_timedDeadlineAndEvent_preservesTypedData() throws BroException {
+        Path filePath = temporaryDirectory.resolve("typed-tasks.txt");
+        Storage storage = new Storage(filePath.toString());
+        TaskList tasks = new TaskList();
+        tasks.add(new Deadlines(LocalDateTime.of(2019, 12, 2, 18, 0), "return book"));
+        tasks.add(new Events("2pm", "4pm", "project meeting"));
+
+        storage.save(tasks);
+        TaskList restoredTasks = storage.load();
+
+        assertEquals("[D] [ ] return book(by: Dec 2 2019 6:00PM)",
+                restoredTasks.getTask(0).toString());
+        assertEquals("[E] [ ] project meeting(from: 2pm to: 4pm)",
+                restoredTasks.getTask(1).toString());
+    }
+
+    /** A malformed saved line is rejected instead of being silently dropped. */
+    @Test
+    void load_malformedTaskLine_throwsBroException() throws Exception {
+        Path filePath = temporaryDirectory.resolve("malformed.txt");
+        Files.writeString(filePath, "X | 0 | unknown task");
+
+        Storage storage = new Storage(filePath.toString());
+
+        assertThrows(BroException.class, storage::load);
     }
 }

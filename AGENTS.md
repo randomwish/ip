@@ -42,6 +42,13 @@ kebab-case branch names. Do not commit or push unless explicitly asked.
 
 Ensure that Java 25 is used when running the application or build tasks. On macOS, use `sdk use java 25.0.3.fx-zulu` to switch to Java 25 if needed.
 
+## JUnit coverage target:
+
+Aim to cover approximately the highest-value 50% of non-trivial public methods
+with JUnit tests, prioritizing core parsing, persistence, task management, and
+user-interface behavior. Update the relevant JUnit tests after every code
+change so the coverage target remains satisfied.
+
 ## Git
 
 Use lightweight tags unless the user requests an annotated tag.

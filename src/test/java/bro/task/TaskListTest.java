@@ -1,8 +1,10 @@
 package bro.task;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -40,5 +42,33 @@ class TaskListTest {
         TaskList tasks = new TaskList();
 
         assertThrows(IndexOutOfBoundsException.class, () -> tasks.getTask(0));
+    }
+
+    /** An empty list reports its state and becomes non-empty after a task is added. */
+    @Test
+    void isEmpty_newListThenAdd_reportsCurrentState() {
+        TaskList tasks = new TaskList();
+
+        assertTrue(tasks.isEmpty());
+        tasks.add(new ToDos("read book"));
+        assertFalse(tasks.isEmpty());
+    }
+
+    /** The task list rejects null tasks rather than storing invalid entries. */
+    @Test
+    void add_nullTask_throwsNullPointerException() {
+        TaskList tasks = new TaskList();
+
+        assertThrows(NullPointerException.class, () -> tasks.add(null));
+    }
+
+    /** The exposed task collection cannot be mutated outside TaskList. */
+    @Test
+    void getTasks_returnedList_isUnmodifiable() {
+        TaskList tasks = new TaskList(List.of(new ToDos("read book")));
+
+        assertThrows(UnsupportedOperationException.class,
+                () -> tasks.getTasks().add(new ToDos("write notes")));
+        assertEquals(1, tasks.size());
     }
 }
