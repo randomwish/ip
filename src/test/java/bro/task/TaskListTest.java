@@ -1,4 +1,4 @@
-package bro;
+package bro.task;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;

@@ -1,4 +1,4 @@
-package bro;
+package bro.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -7,6 +7,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 
+import bro.exception.BroException;
+import bro.task.Deadlines;
+import bro.task.TaskList;
+import bro.task.ToDos;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -23,7 +27,7 @@ class StorageTest {
         TaskList tasks = new TaskList();
         tasks.add(new ToDos("read book"));
         tasks.add(new Deadlines(LocalDate.of(2019, 10, 15), "submit report"));
-        tasks.getTask(0).isDone = true;
+        tasks.getTask(0).setDone(true);
 
         storage.save(tasks);
         TaskList restoredTasks = storage.load();

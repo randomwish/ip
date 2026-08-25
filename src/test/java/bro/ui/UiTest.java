@@ -1,4 +1,4 @@
-package bro;
+package bro.ui;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.Scanner;
 
+import bro.task.ToDos;
 import org.junit.jupiter.api.Test;
 
 /** Verifies that Ui owns console input and output behavior. */

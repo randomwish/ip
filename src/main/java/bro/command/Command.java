@@ -1,4 +1,4 @@
-package bro;
+package bro.command;
 
 import java.util.Objects;
 

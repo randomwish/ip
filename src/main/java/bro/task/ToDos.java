@@ -1,4 +1,4 @@
-package bro;
+package bro.task;
 
 /** Represents a task without a deadline or event time. */
 public class ToDos extends Task {

@@ -1,4 +1,4 @@
-package bro;
+package bro.exception;
 
 /** Represents invalid user input that Bro can explain and recover from. */
 public class BroException extends Exception {

@@ -1,4 +1,8 @@
-package bro;
+package bro.ui;
+
+import bro.task.Task;
+import bro.task.TaskList;
+import bro.task.ToDos;
 
 import java.io.PrintStream;
 import java.util.Objects;
@@ -66,7 +70,7 @@ public class Ui {
     /** Shows the result of marking or unmarking a task. */
     public void showTaskStatusChanged(boolean isDone, Task task) {
         output.println(isDone ? "Ok this item is marked!" : "Ok this item is not marked!");
-        output.println("[" + task.showDone() + "] " + task.description);
+        output.println("[" + task.showDone() + "] " + task.getDescription());
     }
 
     /** Shows the result of deleting a task. */

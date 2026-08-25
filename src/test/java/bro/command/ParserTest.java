@@ -1,10 +1,11 @@
-package bro;
+package bro.command;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import bro.exception.BroException;
 import org.junit.jupiter.api.Test;
 
 /** Verifies that Parser translates raw input into validated command data. */

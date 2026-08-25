@@ -7,6 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
 
+import bro.command.Command;
+import bro.command.Parser;
+import bro.exception.BroException;
+import bro.task.Deadlines;
 import org.junit.jupiter.api.Test;
 
 /** Verifies that deadline input becomes typed date/time data and displays clearly. */

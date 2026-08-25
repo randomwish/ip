@@ -1,4 +1,4 @@
-package bro;
+package bro.task;
 
 /** Represents a task and its completion status. */
 public class Task {
@@ -26,6 +26,16 @@ public class Task {
     /** Sets whether this task has been completed. */
     public void setDone(boolean done) {
         isDone = done;
+    }
+
+    /** Returns the task description for collaborators in other packages. */
+    public String getDescription() {
+        return description;
+    }
+
+    /** Returns whether this task has been completed. */
+    public boolean isDone() {
+        return isDone;
     }
 
     /** Formats the task category, completion state, and description. */

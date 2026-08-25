@@ -6,7 +6,7 @@ stops as soon as one case fails.
 
 ## Test environment
 
-- **Setup command:** `javac -d out/production src/main/java/*.java`
+- **Setup command:** `javac -d out/production $(find src/main/java -name '*.java' -print)`
 - **Timeout seconds:** `5`
 - **Output matching:** Exact, including blank lines and spaces. Line-ending
   differences between Windows and Unix are ignored.

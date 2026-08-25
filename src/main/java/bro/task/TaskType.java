@@ -1,4 +1,4 @@
-package bro;
+package bro.task;
 
 /** Identifies the category of a task and the marker shown for that category. */
 public enum TaskType {

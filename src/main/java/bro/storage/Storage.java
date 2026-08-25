@@ -1,4 +1,11 @@
-package bro;
+package bro.storage;
+
+import bro.exception.BroException;
+import bro.task.Deadlines;
+import bro.task.Events;
+import bro.task.Task;
+import bro.task.TaskList;
+import bro.task.ToDos;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -58,20 +65,20 @@ public class Storage {
 
     /** Converts a task to one line in Bro's saved task-file format. */
     private String toFileLine(Task task) {
-        String done = task.isDone ? "1" : "0";
+        String done = task.isDone() ? "1" : "0";
 
         if (task instanceof ToDos) {
-            return "T | " + done + " | " + task.description;
+            return "T | " + done + " | " + task.getDescription();
         }
 
         if (task instanceof Deadlines deadline) {
-            return "D | " + done + " | " + task.description + " | "
+            return "D | " + done + " | " + task.getDescription() + " | "
                     + deadline.getDueDateTime() + " | " + (deadline.hasDueTime() ? "1" : "0");
         }
 
         Events event = (Events) task;
-        return "E | " + done + " | " + task.description
-                + " | " + event.startTime + " | " + event.dateline;
+        return "E | " + done + " | " + task.getDescription()
+                + " | " + event.getStartTime() + " | " + event.getEndTime();
     }
 
     /** Recreates one task from a line in Bro's saved task-file format. */
@@ -93,7 +100,7 @@ public class Storage {
             throw new BroException("A saved task has an invalid format.");
         }
 
-        task.isDone = parts[1].equals("1");
+        task.setDone(parts[1].equals("1"));
         return task;
     }
 

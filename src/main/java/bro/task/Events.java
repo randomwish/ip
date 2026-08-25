@@ -1,4 +1,4 @@
-package bro;
+package bro.task;
 
 /** Represents a task that occurs between a start and end time. */
 public class Events extends Task {
@@ -10,6 +10,16 @@ public class Events extends Task {
         super(description, TaskType.EVENT);
         this.dateline = deadline;
         this.startTime = startTime;
+    }
+
+    /** Returns the event start time for collaborators in other packages. */
+    public String getStartTime() {
+        return startTime;
+    }
+
+    /** Returns the event end time for collaborators in other packages. */
+    public String getEndTime() {
+        return dateline;
     }
 
     /** Returns the event task in Bro's list format. */
