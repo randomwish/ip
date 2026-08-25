@@ -1,3 +1,5 @@
+package bro;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -12,7 +14,7 @@ import java.util.Scanner;
 
 /** Runs Bro's command-line chatbot and translates invalid input into friendly errors. */
 public class Bro {
-    private static final ArrayList<Task> userTasks = new ArrayList<>();
+    private static final TaskList userTasks = new TaskList();
     private static final String ERROR_BORDER = "    ____________________________________________________________";
     private static final Path SAVE_FILE = Path.of("data", "duke.txt");
     private static final DateTimeFormatter DATE_INPUT_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE;
@@ -39,7 +41,6 @@ public class Bro {
         } catch (BroException exception) {
             printError(exception.getMessage());
         }
-        // Level 7 - Start the saving mechanisms
         while (scanner.hasNextLine()) {
             String userInput = scanner.nextLine().trim();
             if (userInput.equalsIgnoreCase("bye")) {
@@ -95,7 +96,7 @@ public class Bro {
     /** Prints every task in insertion order. */
     private static void listTasks() {
         for (int i = 0; i < userTasks.size(); i++) {
-            System.out.println((i + 1) + ". " + userTasks.get(i));
+            System.out.println((i + 1) + ". " + userTasks.getTask(i));
         }
     }
 
@@ -110,7 +111,6 @@ public class Bro {
         System.out.println(newToDo);
         System.out.println("Now you have" + userTasks.size() + " tasks in the list");
 
-        // Level 7 - Saving
     }
 
     /** Adds a deadline after validating its description and /by component. */
@@ -132,10 +132,10 @@ public class Bro {
     /**
      * Creates a deadline from either an ISO date or the assignment's day/month/year time format.
      *
-     * @param dueText text following the command's {@code /by} marker
-     * @param description task description supplied before the marker
-     * @return a deadline that retains whether the user supplied a time
-     * @throws BroException if the date or time does not match a supported, valid format
+     * @param dueText text following the command's {@code /by} marker.
+     * @param description task description supplied before the marker.
+     * @return a deadline that retains whether the user supplied a time.
+     * @throws BroException if the date or time does not match a supported, valid format.
      */
     static Deadlines createDeadline(String dueText, String description) throws BroException {
         try {
@@ -177,7 +177,7 @@ public class Bro {
         String operation = done ? "mark" : "unmark";
         int index = getTaskIndex(commandParts, operation);
 
-        Task chosenTask = userTasks.get(index - 1);
+        Task chosenTask = userTasks.getTask(index - 1);
         chosenTask.isDone = done;
         saveTasks();
         System.out.println(done ? "Ok this item is marked!" : "Ok this item is not marked!");
@@ -187,7 +187,7 @@ public class Bro {
     /** Removes the requested task and reports the remaining list size. */
     private static void deleteTask(String[] commandParts) throws BroException {
         int index = getTaskIndex(commandParts, "delete");
-        Task removedTask = userTasks.remove(index - 1);
+        Task removedTask = userTasks.removeTask(index - 1);
         saveTasks();
         System.out.println("Noted. I've removed:");
         System.out.println(removedTask);
@@ -303,7 +303,7 @@ public class Bro {
             Files.createDirectories(SAVE_FILE.getParent());
 
             ArrayList<String> lines = new ArrayList<>();
-            for (Task task : userTasks) {
+            for (Task task : userTasks.getTasks()) {
                 lines.add(toFileLine(task));
             }
 

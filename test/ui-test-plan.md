@@ -19,7 +19,7 @@ stops as soon as one case fails.
 
 **Aim:** Verify that the application shows its greeting and exits cleanly.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
 
 **Inputs:**
 ```text
@@ -42,7 +42,7 @@ Goodbye!
 
 **Aim:** Verify that a todo command adds a task and list displays it.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
 
 **Inputs:**
 ```text
@@ -72,7 +72,7 @@ Goodbye!
 
 **Aim:** Verify that a deadline command stores an ISO date and displays it in a friendly format.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
 
 **Inputs:**
 ```text
@@ -102,7 +102,7 @@ Goodbye!
 
 **Aim:** Verify that a day/month/year deadline time is parsed and displayed in a friendly format.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
 
 **Inputs:**
 ```text
@@ -132,7 +132,7 @@ Goodbye!
 
 **Aim:** Verify that a valid leap-day deadline is accepted and formatted correctly.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
 
 **Inputs:**
 ```text
@@ -162,7 +162,7 @@ Goodbye!
 
 **Aim:** Verify that 24-hour midnight is formatted as 12:00AM.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
 
 **Inputs:**
 ```text
@@ -192,7 +192,7 @@ Goodbye!
 
 **Aim:** Verify that a typed deadline and its completion state survive a chatbot restart.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
 
 **Inputs:**
 ```text
@@ -238,7 +238,7 @@ Goodbye!
 
 **Aim:** Verify that an event command stores and lists both event times.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
 
 **Inputs:**
 ```text
@@ -268,7 +268,7 @@ Goodbye!
 
 **Aim:** Verify that mark changes the selected todo and list shows it as complete.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
 
 **Inputs:**
 ```text
@@ -301,7 +301,7 @@ Goodbye!
 
 **Aim:** Verify that an empty todo is rejected and the session continues.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
 
 **Inputs:**
 ```text
@@ -329,7 +329,7 @@ Goodbye!
 
 **Aim:** Verify that an unrecognised command is rejected without terminating Bro.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
 
 **Inputs:**
 ```text
@@ -356,7 +356,7 @@ Goodbye!
 
 **Aim:** Verify that a deadline without a /by date gives a useful usage hint.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
 
 **Inputs:**
 ```text
@@ -383,7 +383,7 @@ Goodbye!
 
 **Aim:** Verify that an invalid calendar date is rejected without adding a task.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
 
 **Inputs:**
 ```text
@@ -410,7 +410,7 @@ Goodbye!
 
 **Aim:** Verify that a non-leap-year ISO date is rejected.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
 
 **Inputs:**
 ```text
@@ -437,7 +437,7 @@ Goodbye!
 
 **Aim:** Verify that an invalid 24-hour time is rejected.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
 
 **Inputs:**
 ```text
@@ -464,7 +464,7 @@ Goodbye!
 
 **Aim:** Verify that an event missing its /to component gives a useful usage hint.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
 
 **Inputs:**
 ```text
@@ -491,7 +491,7 @@ Goodbye!
 
 **Aim:** Verify that a non-numeric mark index is reported clearly.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
 
 **Inputs:**
 ```text
@@ -523,7 +523,7 @@ Goodbye!
 
 **Aim:** Verify that a mark index outside the task list is rejected.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
 
 **Inputs:**
 ```text
@@ -555,7 +555,7 @@ Goodbye!
 
 **Aim:** Verify that unmark validates its task index too.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
 
 **Inputs:**
 ```text
@@ -587,7 +587,7 @@ Goodbye!
 
 **Aim:** Verify that a blank line is handled as invalid input rather than a task.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
 
 **Inputs:**
 ```text
@@ -614,7 +614,7 @@ Goodbye!
 
 **Aim:** Verify that delete removes the selected task and renumbers the remaining list.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
 
 **Inputs:**
 ```text
@@ -659,7 +659,7 @@ Goodbye!
 
 **Aim:** Verify that delete without a task number gives a usage hint.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
 
 **Inputs:**
 ```text
@@ -691,7 +691,7 @@ Goodbye!
 
 **Aim:** Verify that delete rejects an index beyond the current task list.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
 
 **Inputs:**
 ```text
@@ -723,7 +723,7 @@ Goodbye!
 
 **Aim:** Verify that delete on an empty list reports the problem without crashing.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
 
 **Inputs:**
 ```text

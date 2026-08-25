@@ -25,7 +25,7 @@ When the application writes relative-path data, use these placeholders in the
 run command to isolate that data for each case:
 
 ```markdown
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
 ```
 
 The runner substitutes `{workspace}` with the repository's absolute path and
@@ -49,7 +49,7 @@ output of both sessions with the expected-output block.
 
 **Aim:** Verify that the application greets the user and exits cleanly.
 
-**Run command:** `java -cp out/production Bro`
+**Run command:** `java -cp out/production bro.Bro`
 
 **Inputs:**
 ```text
