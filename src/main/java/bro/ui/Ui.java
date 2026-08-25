@@ -5,12 +5,13 @@ import bro.task.TaskList;
 import bro.task.ToDos;
 
 import java.io.PrintStream;
+import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 
 /** Handles Bro's console input and output. */
 public class Ui {
-    private static final String ERROR_BORDER = "    ____________________________________________________________";
+    private static final String MESSAGE_BORDER = "    ____________________________________________________________";
     private static final String BANNER = """
               ____               \s
              | __ )  _ __   ___  \s
@@ -46,9 +47,9 @@ public class Ui {
 
     /** Shows a recoverable error message. */
     public void showError(String message) {
-        output.println(ERROR_BORDER);
+        output.println(MESSAGE_BORDER);
         output.println("     " + message);
-        output.println(ERROR_BORDER);
+        output.println(MESSAGE_BORDER);
     }
 
     /** Shows the task list in insertion order. */
@@ -56,6 +57,20 @@ public class Ui {
         for (int i = 0; i < tasks.size(); i++) {
             output.println((i + 1) + ". " + tasks.getTask(i));
         }
+    }
+
+    /**
+     * Shows tasks whose descriptions match a find keyword.
+     *
+     * @param matchingTasks Tasks that matched the user's keyword.
+     */
+    public void showFindResults(List<Task> matchingTasks) {
+        output.println(MESSAGE_BORDER);
+        output.println("     Here are the matching tasks in your list:");
+        for (int i = 0; i < matchingTasks.size(); i++) {
+            output.println((i + 1) + ". " + matchingTasks.get(i));
+        }
+        output.println(MESSAGE_BORDER);
     }
 
     /** Shows a confirmation and the newly added task. */
