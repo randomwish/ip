@@ -72,6 +72,9 @@ public class Bro {
             parser.ensureNoArguments(command, "list");
             ui.showTaskList(tasks);
             break;
+        case "find":
+            findTasks(command);
+            break;
         case "mark":
             changeTaskStatus(command, true);
             break;
@@ -92,8 +95,14 @@ public class Bro {
             break;
         default:
             throw new BroException("I don't recognize that command. Try todo, deadline, event, "
-                    + "list, mark, unmark, delete, or bye.");
+                    + "list, find, mark, unmark, delete, or bye.");
         }
+    }
+
+    /** Finds tasks whose descriptions contain the requested keyword. */
+    private void findTasks(Command command) throws BroException {
+        String keyword = parser.requireArgument(command, "Use: find <keyword>.");
+        ui.showFindResults(tasks.findTasks(keyword));
     }
 
     /** Adds a todo after checking that its description is present. */

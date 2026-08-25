@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.List;
 import java.util.Scanner;
 
 import bro.task.Events;
@@ -59,6 +60,22 @@ class UiTest {
         ui.showTaskList(tasks);
 
         assertEquals("1. [T] [ ] read book\n2. [E] [ ] project meeting(from: 2pm to: 4pm)\n",
+                output.toString());
+    }
+
+    /** Find results use the standard border, heading, numbering, and task formatting. */
+    @Test
+    void showFindResults_matchingTasks_printsNumberedResults() {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        Ui ui = new Ui(new Scanner(""), new PrintStream(output));
+
+        ui.showFindResults(List.of(new ToDos("read book"), new ToDos("return book")));
+
+        assertEquals("    ____________________________________________________________\n"
+                        + "     Here are the matching tasks in your list:\n"
+                        + "1. [T] [ ] read book\n"
+                        + "2. [T] [ ] return book\n"
+                        + "    ____________________________________________________________\n",
                 output.toString());
     }
 

@@ -347,7 +347,51 @@ bye
 
 Hello, I'm Bro! What drink do you want?
     ____________________________________________________________
-     I don't recognize that command. Try todo, deadline, event, list, mark, unmark, delete, or bye.
+     I don't recognize that command. Try todo, deadline, event, list, find, mark, unmark, delete, or bye.
+    ____________________________________________________________
+Goodbye!
+```
+
+## Test case: find-task-by-keyword
+
+**Aim:** Verify that find displays matching task descriptions in list order and ignores letter case.
+
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
+
+**Inputs:**
+```text
+todo read book
+deadline return book /by 2019-10-15
+todo write notes
+find BOOK
+bye
+```
+
+**Expected output:**
+```text
+  ____                
+ | __ )  _ __   ___   
+ |  _ \ | '__| / _ \ 
+ | |_) || |   | (_) | 
+ |____/ |_|    \___/  
+
+Hello, I'm Bro! What drink do you want?
+Got it. I've added: 
+
+[T] [ ] read book
+Now you have1 tasks in the list
+Got it. I've added: 
+
+[D] [ ] return book(by: Oct 15 2019)
+Now you have 2 tasks in the list
+Got it. I've added: 
+
+[T] [ ] write notes
+Now you have3 tasks in the list
+    ____________________________________________________________
+     Here are the matching tasks in your list:
+1. [T] [ ] read book
+2. [D] [ ] return book(by: Oct 15 2019)
     ____________________________________________________________
 Goodbye!
 ```

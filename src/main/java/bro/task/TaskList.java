@@ -3,6 +3,7 @@ package bro.task;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 /** Owns Bro's tasks and provides operations for managing their order and membership. */
@@ -47,5 +48,24 @@ public class TaskList {
     /** Returns a read-only view for operations such as saving the task list. */
     public List<Task> getTasks() {
         return Collections.unmodifiableList(tasks);
+    }
+
+    /**
+     * Returns tasks whose descriptions contain the supplied keyword, ignoring letter case.
+     *
+     * @param keyword Keyword to search for in task descriptions.
+     * @return Matching tasks in their original list order.
+     */
+    public List<Task> findTasks(String keyword) {
+        String normalizedKeyword = Objects.requireNonNull(keyword).trim().toLowerCase(Locale.ROOT);
+        List<Task> matchingTasks = new ArrayList<>();
+
+        for (Task task : tasks) {
+            String description = task.getDescription().toLowerCase(Locale.ROOT);
+            if (description.contains(normalizedKeyword)) {
+                matchingTasks.add(task);
+            }
+        }
+        return Collections.unmodifiableList(matchingTasks);
     }
 }

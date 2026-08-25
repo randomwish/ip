@@ -71,4 +71,15 @@ class TaskListTest {
                 () -> tasks.getTasks().add(new ToDos("write notes")));
         assertEquals(1, tasks.size());
     }
+
+    /** A find keyword matches descriptions without changing task order or requiring letter case. */
+    @Test
+    void findTasks_keyword_matchesDescriptionsCaseInsensitivelyInOrder() {
+        Task firstTask = new ToDos("read book");
+        Task secondTask = new ToDos("write notes");
+        Task thirdTask = new ToDos("return BOOK");
+        TaskList tasks = new TaskList(List.of(firstTask, secondTask, thirdTask));
+
+        assertEquals(List.of(firstTask, thirdTask), tasks.findTasks("book"));
+    }
 }
