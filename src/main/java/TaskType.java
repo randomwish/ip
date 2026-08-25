@@ -1,3 +1,5 @@
+package bro;
+
 /** Identifies the category of a task and the marker shown for that category. */
 public enum TaskType {
     /** A task that has no date or time attached to it. */

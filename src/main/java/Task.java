@@ -1,3 +1,5 @@
+package bro;
+
 /** Represents a task and its completion status. */
 public class Task {
     protected String description;
@@ -19,6 +21,11 @@ public class Task {
     /** Returns X for a completed task and a blank space otherwise. */
     public String showDone() {
         return (isDone ? "X" : " "); // mark done task with X
+    }
+
+    /** Sets whether this task has been completed. */
+    public void setDone(boolean done) {
+        isDone = done;
     }
 
     /** Formats the task category, completion state, and description. */

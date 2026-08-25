@@ -1,3 +1,5 @@
+package bro;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -12,7 +14,8 @@ class DeadlinesTest {
     /** ISO dates are stored as a date-only value and use the friendly display format. */
     @Test
     void parsesIsoDateAsDateOnlyDeadline() throws BroException {
-        Deadlines deadline = Bro.createDeadline("2019-10-15", "submit report");
+        Deadlines deadline = new Parser().parseDeadline(
+                new Command("deadline", "submit report /by 2019-10-15"));
 
         assertEquals(LocalDateTime.of(2019, 10, 15, 0, 0), deadline.getDueDateTime());
         assertFalse(deadline.hasDueTime());
@@ -22,7 +25,8 @@ class DeadlinesTest {
     /** Day/month/year input with a 24-hour time is stored and printed with a 12-hour clock. */
     @Test
     void parsesDayMonthYearTimeAsDateTimeDeadline() throws BroException {
-        Deadlines deadline = Bro.createDeadline("2/12/2019 1800", "return book");
+        Deadlines deadline = new Parser().parseDeadline(
+                new Command("deadline", "return book /by 2/12/2019 1800"));
 
         assertEquals(LocalDateTime.of(2019, 12, 2, 18, 0), deadline.getDueDateTime());
         assertTrue(deadline.hasDueTime());
@@ -32,7 +36,11 @@ class DeadlinesTest {
     /** Invalid calendar values and invalid 24-hour times are rejected instead of being stored. */
     @Test
     void rejectsInvalidDateAndTimeInput() {
-        assertThrows(BroException.class, () -> Bro.createDeadline("2019-02-29", "tax return"));
-        assertThrows(BroException.class, () -> Bro.createDeadline("2/12/2019 2460", "return book"));
+        Parser parser = new Parser();
+
+        assertThrows(BroException.class, () -> parser.parseDeadline(
+                new Command("deadline", "tax return /by 2019-02-29")));
+        assertThrows(BroException.class, () -> parser.parseDeadline(
+                new Command("deadline", "return book /by 2/12/2019 2460")));
     }
 }
