@@ -28,6 +28,8 @@ Apply these rules to every Java change in this repository. Treat the [SE-EDU Jav
 - Surround operators, reserved-word parentheses, commas, and binary or ternary colons with the appropriate spaces.
 - Separate logical units in a block with one blank line.
 - Include `// Fallthrough` for an intentional switch fallthrough.
+- Organize class members as documentation, declaration, class variables, instance variables, constructors, and methods; order variables by visibility within each group.
+- Put the access modifier first in a method declaration, followed by `static`, `abstract`, `synchronized`, unusual modifiers, and `final` where applicable.
 
 ## Statements and types
 
@@ -44,6 +46,7 @@ Apply these rules to every Java change in this repository. Treat the [SE-EDU Jav
 - Start each Javadoc summary with a short action-oriented sentence such as `Returns ...`, `Adds ...`, or `Creates ...`.
 - Put `/**` on its own line, align the `*` markers, leave no blank line before the declaration, and add a blank line before `@param`, `@return`, or `@throws` tags when tags are present.
 - End parameter and exception descriptions with punctuation. Add only tags that clarify the API; either document all parameters or none when the names and summary already explain them.
+- Document protected and package-private methods when they form part of the project-facing API, while keeping exact inherited overrides concise with `@inheritDoc` when appropriate.
 - Indent inline comments with the code they explain, and keep comments beside the relevant logical unit.
 
 ## Change workflow
