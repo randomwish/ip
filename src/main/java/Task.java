@@ -23,6 +23,11 @@ public class Task {
         return (isDone ? "X" : " "); // mark done task with X
     }
 
+    /** Sets whether this task has been completed. */
+    public void setDone(boolean done) {
+        isDone = done;
+    }
+
     /** Formats the task category, completion state, and description. */
     protected String formatTask(String taskDetails) {
         return "[" + taskType.getDisplayCode() + "] [" + showDone() + "] " + taskDetails;

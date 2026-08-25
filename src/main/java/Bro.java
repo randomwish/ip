@@ -1,52 +1,65 @@
 package bro;
 
-import java.util.Scanner;
+import java.util.Objects;
 
-/** Runs Bro's command-line chatbot and translates invalid input into friendly errors. */
+/** Coordinates Bro's user interface, command parser, task list, and storage. */
 public class Bro {
-    private static TaskList userTasks = new TaskList();
-    private static final String ERROR_BORDER = "    ____________________________________________________________";
-    private static final Parser PARSER = new Parser();
-    private static final Storage STORAGE = new Storage("data/duke.txt");
+    private static final String DEFAULT_FILE_PATH = "data/duke.txt";
 
-    /** Starts a session, processing commands until the user says goodbye or closes the input. */
-    public static void main(String[] args) {
-        String banner = """
-                  ____               \s
-                 | __ )  _ __   ___  \s
-                 |  _ \\ | '__| / _ \\\s
-                 | |_) || |   | (_) |\s
-                 |____/ |_|    \\___/ \s
-                """;
-        Scanner scanner = new Scanner(System.in);
-        System.out.println(banner);
-        System.out.println("Hello, I'm Bro! What drink do you want?");
+    private final Storage storage;
+    private final Ui ui;
+    private final Parser parser;
+    private TaskList tasks;
+
+    /** Creates Bro with storage at the supplied file path and the process console as its UI. */
+    public Bro(String filePath) {
+        this(new Storage(filePath), new Ui(), new Parser());
+    }
+
+    /** Creates Bro with the supplied collaborators. */
+    Bro(Storage storage, Ui ui, Parser parser) {
+        this.storage = Objects.requireNonNull(storage);
+        this.ui = Objects.requireNonNull(ui);
+        this.parser = Objects.requireNonNull(parser);
+        this.tasks = new TaskList();
+    }
+
+    /** Runs the chatbot until the user says goodbye or closes the input. */
+    public void run() {
+        ui.showWelcome();
         try {
-            userTasks = STORAGE.load();
+            tasks = storage.load();
         } catch (BroException exception) {
-            printError(exception.getMessage());
+            ui.showError(exception.getMessage());
+            tasks = new TaskList();
         }
-        while (scanner.hasNextLine()) {
-            String userInput = scanner.nextLine().trim();
+
+        String userInput;
+        while ((userInput = ui.readCommand()) != null) {
             if (userInput.equalsIgnoreCase("bye")) {
                 break;
             }
 
             try {
-                handleCommand(PARSER.parseCommand(userInput));
+                handleCommand(parser.parseCommand(userInput));
             } catch (BroException exception) {
-                printError(exception.getMessage());
+                ui.showError(exception.getMessage());
             }
         }
-        System.out.println("Goodbye!");
+        ui.showGoodbye();
     }
 
-    /** Dispatches one non-exit command, throwing a BroException for invalid input. */
-    private static void handleCommand(Command command) throws BroException {
+    /** Starts Bro with its default relative storage path. */
+    public static void main(String[] args) {
+        new Bro(DEFAULT_FILE_PATH).run();
+    }
+
+    /** Dispatches one parsed command, throwing a BroException for invalid input. */
+    private void handleCommand(Command command) throws BroException {
         switch (command.getAction()) {
         case "list":
-            PARSER.ensureNoArguments(command, "list");
-            listTasks();
+            parser.ensureNoArguments(command, "list");
+            ui.showTaskList(tasks);
             break;
         case "mark":
             changeTaskStatus(command, true);
@@ -72,73 +85,48 @@ public class Bro {
         }
     }
 
-    /** Prints every task in insertion order. */
-    private static void listTasks() {
-        for (int i = 0; i < userTasks.size(); i++) {
-            System.out.println((i + 1) + ". " + userTasks.getTask(i));
-        }
-    }
-
     /** Adds a todo after checking that its description is present. */
-    private static void addTodo(Command command) throws BroException {
-        String description = PARSER.requireArgument(command, "A todo needs a description. "
+    private void addTodo(Command command) throws BroException {
+        String description = parser.requireArgument(command, "A todo needs a description. "
                 + "Try: todo <description>.");
         ToDos newToDo = new ToDos(description);
-        userTasks.add(newToDo);
-        STORAGE.save(userTasks);
-        System.out.println("Got it. I've added: \n");
-        System.out.println(newToDo);
-        System.out.println("Now you have" + userTasks.size() + " tasks in the list");
-
+        tasks.add(newToDo);
+        storage.save(tasks);
+        ui.showTaskAdded(newToDo, tasks.size());
     }
 
     /** Adds a deadline after validating its description and /by component. */
-    private static void addDeadline(Command command) throws BroException {
-        Deadlines newDeadline = PARSER.parseDeadline(command);
-        userTasks.add(newDeadline);
-        STORAGE.save(userTasks);
-        System.out.println("Got it. I've added: \n");
-        System.out.println(newDeadline);
-        System.out.println("Now you have " + userTasks.size() + " tasks in the list");
+    private void addDeadline(Command command) throws BroException {
+        Deadlines newDeadline = parser.parseDeadline(command);
+        tasks.add(newDeadline);
+        storage.save(tasks);
+        ui.showTaskAdded(newDeadline, tasks.size());
     }
 
     /** Adds an event after validating its description, start, and end components. */
-    private static void addEvent(Command command) throws BroException {
-        Events newEvent = PARSER.parseEvent(command);
-        userTasks.add(newEvent);
-        STORAGE.save(userTasks);
-        System.out.println("Got it. I've added: \n");
-        System.out.println(newEvent);
-        System.out.println("Now you have " + userTasks.size() + " tasks in the list");
+    private void addEvent(Command command) throws BroException {
+        Events newEvent = parser.parseEvent(command);
+        tasks.add(newEvent);
+        storage.save(tasks);
+        ui.showTaskAdded(newEvent, tasks.size());
     }
 
     /** Marks or unmarks the requested task after validating its index. */
-    private static void changeTaskStatus(Command command, boolean done) throws BroException {
+    private void changeTaskStatus(Command command, boolean done) throws BroException {
         String operation = done ? "mark" : "unmark";
-        int index = PARSER.parseTaskIndex(command, operation, userTasks.size());
+        int index = parser.parseTaskIndex(command, operation, tasks.size());
 
-        Task chosenTask = userTasks.getTask(index - 1);
-        chosenTask.isDone = done;
-        STORAGE.save(userTasks);
-        System.out.println(done ? "Ok this item is marked!" : "Ok this item is not marked!");
-        System.out.println("[" + chosenTask.showDone() + "] " + chosenTask.description);
+        Task chosenTask = tasks.getTask(index - 1);
+        chosenTask.setDone(done);
+        storage.save(tasks);
+        ui.showTaskStatusChanged(done, chosenTask);
     }
 
     /** Removes the requested task and reports the remaining list size. */
-    private static void deleteTask(Command command) throws BroException {
-        int index = PARSER.parseTaskIndex(command, "delete", userTasks.size());
-        Task removedTask = userTasks.removeTask(index - 1);
-        STORAGE.save(userTasks);
-        System.out.println("Noted. I've removed:");
-        System.out.println(removedTask);
-        System.out.println("Now you have " + userTasks.size() + " tasks in the list");
+    private void deleteTask(Command command) throws BroException {
+        int index = parser.parseTaskIndex(command, "delete", tasks.size());
+        Task removedTask = tasks.removeTask(index - 1);
+        storage.save(tasks);
+        ui.showTaskDeleted(removedTask, tasks.size());
     }
-
-    /** Displays a consistent, recoverable error message without ending the session. */
-    private static void printError(String message) {
-        System.out.println(ERROR_BORDER);
-        System.out.println("     " + message);
-        System.out.println(ERROR_BORDER);
-    }
-
 }
