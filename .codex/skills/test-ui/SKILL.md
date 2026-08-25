@@ -33,6 +33,11 @@ The runner substitutes `{workspace}` with the repository's absolute path and
 using its normal relative path while preventing one test case's saved data from
 affecting another.
 
+To verify data loaded in a new application process, add an optional
+`**Restart inputs:**` fenced block. The runner launches the same command a
+second time in the same temporary directory, then compares the concatenated
+output of both sessions with the expected-output block.
+
 ```markdown
 ## Test environment
 

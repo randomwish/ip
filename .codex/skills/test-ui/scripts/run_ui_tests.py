@@ -24,12 +24,13 @@ class PlanError(ValueError):
 
 @dataclass(frozen=True)
 class TestCase:
-    """Represent one independent console session described by the test plan."""
+    """Represent one test case with an initial and optional restarted console session."""
 
     name: str
     aim: str
     command: str
     inputs: str
+    restart_inputs: str | None
     expected_output: str
 
 
@@ -102,6 +103,16 @@ def fenced_value(section: str, label: str) -> str:
     return normalize_newlines(match.group("value"))
 
 
+def optional_fenced_value(section: str, label: str) -> str | None:
+    """Return an optional fenced-code field from one test-plan section."""
+    pattern = re.compile(
+        rf"^\s*\*\*{re.escape(label)}:\*\*\s*\n```[^\n]*\n(?P<value>.*?)^```\s*$",
+        re.IGNORECASE | re.MULTILINE | re.DOTALL,
+    )
+    match = pattern.search(section)
+    return normalize_newlines(match.group("value")) if match else None
+
+
 def parse_plan(plan_path: Path) -> TestPlan:
     """Parse the supported Markdown test-plan format into executable sessions."""
     try:
@@ -136,6 +147,7 @@ def parse_plan(plan_path: Path) -> TestPlan:
                 aim=single_line_value(section, "Aim"),
                 command=inline_value(section, "Run command"),
                 inputs=fenced_value(section, "Inputs"),
+                restart_inputs=optional_fenced_value(section, "Restart inputs"),
                 expected_output=fenced_value(section, "Expected output"),
             )
         )
@@ -234,29 +246,46 @@ def run_case(case: TestCase, timeout_seconds: float, workspace: Path) -> bool:
     """Run one test case and display a full transcript and failure diagnostics."""
     with tempfile.TemporaryDirectory(prefix="console-ui-test-") as temporary_directory:
         command = expand_command(case.command, workspace, Path(temporary_directory))
+        sessions = [("Initial session", case.inputs)]
+        if case.restart_inputs is not None:
+            sessions.append(("Restarted session", case.restart_inputs))
+
         print(f"=== Test case: {case.name} ===")
         print(f"Aim: {case.aim}")
-        show_input(command, case.inputs)
-        result = run_command(command, case.inputs, timeout_seconds, workspace)
-        print("Console output:")
-        show_text(result.output)
+        results: list[CommandResult] = []
+        for session_name, session_inputs in sessions:
+            if len(sessions) > 1:
+                print(f"{session_name}:")
+            show_input(command, session_inputs)
+            result = run_command(command, session_inputs, timeout_seconds, workspace)
+            results.append(result)
+            print("Console output:")
+            show_text(result.output)
+            if result.timed_out or result.return_code != 0:
+                break
 
-        output_matches = result.output == case.expected_output
-        if not result.timed_out and result.return_code == 0 and output_matches:
+        actual_output = "".join(result.output for result in results)
+        output_matches = actual_output == case.expected_output
+        all_sessions_succeeded = len(results) == len(sessions) and all(
+            not result.timed_out and result.return_code == 0 for result in results
+        )
+        if all_sessions_succeeded and output_matches:
             print("Result: PASS")
             return True
 
         print("Result: FAIL — stopping the test session immediately.")
-        if result.timed_out:
+        timed_out_result = next((result for result in results if result.timed_out), None)
+        failed_result = next((result for result in results if result.return_code not in (0, None)), None)
+        if timed_out_result:
             print(f"The program timed out after {timeout_seconds:g} seconds.")
-        else:
-            print(f"Program exit status: {result.return_code}")
+        elif failed_result:
+            print(f"Program exit status: {failed_result.return_code}")
         print("Expected console output:")
         show_text(case.expected_output)
         print("Actual console output:")
-        show_text(result.output)
+        show_text(actual_output)
         if not output_matches:
-            show_difference(case.expected_output, result.output)
+            show_difference(case.expected_output, actual_output)
         return False
 
 

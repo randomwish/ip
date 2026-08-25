@@ -12,6 +12,8 @@ stops as soon as one case fails.
   differences between Windows and Unix are ignored.
 - **Path placeholders:** `{workspace}` expands to the repository's absolute path and
   `{test_dir}` expands to an isolated temporary working directory for that case.
+- **Restart inputs:** An optional fenced block runs the same command again in the
+  same temporary directory so saved data can be checked after a restart.
 
 ## Test case: greeting-and-exit
 
@@ -123,6 +125,112 @@ Got it. I've added:
 [D] [ ] return book(by: Dec 2 2019 6:00PM)
 Now you have 1 tasks in the list
 1. [D] [ ] return book(by: Dec 2 2019 6:00PM)
+Goodbye!
+```
+
+## Test case: deadline-leap-day
+
+**Aim:** Verify that a valid leap-day deadline is accepted and formatted correctly.
+
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+
+**Inputs:**
+```text
+deadline submit tax return /by 2020-02-29
+list
+bye
+```
+
+**Expected output:**
+```text
+  ____                
+ | __ )  _ __   ___   
+ |  _ \ | '__| / _ \ 
+ | |_) || |   | (_) | 
+ |____/ |_|    \___/  
+
+Hello, I'm Bro! What drink do you want?
+Got it. I've added: 
+
+[D] [ ] submit tax return(by: Feb 29 2020)
+Now you have 1 tasks in the list
+1. [D] [ ] submit tax return(by: Feb 29 2020)
+Goodbye!
+```
+
+## Test case: deadline-midnight
+
+**Aim:** Verify that 24-hour midnight is formatted as 12:00AM.
+
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+
+**Inputs:**
+```text
+deadline reset password /by 2/12/2019 0000
+list
+bye
+```
+
+**Expected output:**
+```text
+  ____                
+ | __ )  _ __   ___   
+ |  _ \ | '__| / _ \ 
+ | |_) || |   | (_) | 
+ |____/ |_|    \___/  
+
+Hello, I'm Bro! What drink do you want?
+Got it. I've added: 
+
+[D] [ ] reset password(by: Dec 2 2019 12:00AM)
+Now you have 1 tasks in the list
+1. [D] [ ] reset password(by: Dec 2 2019 12:00AM)
+Goodbye!
+```
+
+## Test case: deadline-persists-after-restart
+
+**Aim:** Verify that a typed deadline and its completion state survive a chatbot restart.
+
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+
+**Inputs:**
+```text
+deadline return book /by 2/12/2019 1800
+mark 1
+bye
+```
+
+**Restart inputs:**
+```text
+list
+bye
+```
+
+**Expected output:**
+```text
+  ____                
+ | __ )  _ __   ___   
+ |  _ \ | '__| / _ \ 
+ | |_) || |   | (_) | 
+ |____/ |_|    \___/  
+
+Hello, I'm Bro! What drink do you want?
+Got it. I've added: 
+
+[D] [ ] return book(by: Dec 2 2019 6:00PM)
+Now you have 1 tasks in the list
+Ok this item is marked!
+[X] return book
+Goodbye!
+  ____                
+ | __ )  _ __   ___   
+ |  _ \ | '__| / _ \ 
+ | |_) || |   | (_) | 
+ |____/ |_|    \___/  
+
+Hello, I'm Bro! What drink do you want?
+1. [D] [X] return book(by: Dec 2 2019 6:00PM)
 Goodbye!
 ```
 
@@ -280,6 +388,60 @@ Goodbye!
 **Inputs:**
 ```text
 deadline return book /by 31/2/2019 1800
+bye
+```
+
+**Expected output:**
+```text
+  ____                
+ | __ )  _ __   ___   
+ |  _ \ | '__| / _ \ 
+ | |_) || |   | (_) | 
+ |____/ |_|    \___/  
+
+Hello, I'm Bro! What drink do you want?
+    ____________________________________________________________
+     Use: deadline <description> /by <yyyy-MM-dd> or <d/M/yyyy HHmm>.
+    ____________________________________________________________
+Goodbye!
+```
+
+## Test case: invalid-iso-deadline-date
+
+**Aim:** Verify that a non-leap-year ISO date is rejected.
+
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+
+**Inputs:**
+```text
+deadline submit tax return /by 2019-02-29
+bye
+```
+
+**Expected output:**
+```text
+  ____                
+ | __ )  _ __   ___   
+ |  _ \ | '__| / _ \ 
+ | |_) || |   | (_) | 
+ |____/ |_|    \___/  
+
+Hello, I'm Bro! What drink do you want?
+    ____________________________________________________________
+     Use: deadline <description> /by <yyyy-MM-dd> or <d/M/yyyy HHmm>.
+    ____________________________________________________________
+Goodbye!
+```
+
+## Test case: invalid-deadline-time
+
+**Aim:** Verify that an invalid 24-hour time is rejected.
+
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production Bro`
+
+**Inputs:**
+```text
+deadline return book /by 2/12/2019 2460
 bye
 ```
 

@@ -137,7 +137,7 @@ public class Bro {
      * @return a deadline that retains whether the user supplied a time
      * @throws BroException if the date or time does not match a supported, valid format
      */
-    private static Deadlines createDeadline(String dueText, String description) throws BroException {
+    static Deadlines createDeadline(String dueText, String description) throws BroException {
         try {
             LocalDateTime dueDateTime = LocalDateTime.parse(dueText, DATE_TIME_INPUT_FORMAT);
             return new Deadlines(dueDateTime, description);
