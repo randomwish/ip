@@ -24,6 +24,20 @@ Unless the user says otherwise, assume that you are assisting a student working 
 
 # Project-specific requirements
 
+## Project-local standards
+
+All Java source and test code in this repository must follow
+`.codex/skills/seedu-java-coding-standard/SKILL.md`. In particular, keep every
+class in a named lower-case package, use the `bro` package for the current
+application, and apply the standard's naming, layout, visibility, and Javadoc
+rules to new and modified code.
+
+All future commits and branch names must follow
+`.codex/skills/seedu-git-standard/SKILL.md`. Use imperative, capitalized
+subjects without final periods, keep subjects within the stated length limits,
+write wrapped WHAT/WHY bodies for non-trivial commits, and use meaningful
+kebab-case branch names. Do not commit or push unless explicitly asked.
+
 ## Java version:
 
 Ensure that Java 25 is used when running the application or build tasks. On macOS, use `sdk use java 25.0.3.fx-zulu` to switch to Java 25 if needed.
