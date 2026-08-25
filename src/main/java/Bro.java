@@ -4,11 +4,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.format.ResolverStyle;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -17,12 +14,7 @@ public class Bro {
     private static final TaskList userTasks = new TaskList();
     private static final String ERROR_BORDER = "    ____________________________________________________________";
     private static final Path SAVE_FILE = Path.of("data", "duke.txt");
-    private static final DateTimeFormatter DATE_INPUT_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE;
-    private static final DateTimeFormatter DATE_TIME_INPUT_FORMAT = DateTimeFormatter
-            .ofPattern("d/M/uuuu HHmm")
-            .withResolverStyle(ResolverStyle.STRICT);
-    private static final String DEADLINE_USAGE = "Use: deadline <description> /by <yyyy-MM-dd> "
-            + "or <d/M/yyyy HHmm>.";
+    private static final Parser PARSER = new Parser();
 
     /** Starts a session, processing commands until the user says goodbye or closes the input. */
     public static void main(String[] args) {
@@ -48,7 +40,7 @@ public class Bro {
             }
 
             try {
-                handleCommand(userInput);
+                handleCommand(PARSER.parseCommand(userInput));
             } catch (BroException exception) {
                 printError(exception.getMessage());
             }
@@ -57,35 +49,29 @@ public class Bro {
     }
 
     /** Dispatches one non-exit command, throwing a BroException for invalid input. */
-    private static void handleCommand(String userInput) throws BroException {
-        if (userInput.isBlank()) {
-            throw new BroException("Please enter a command.");
-        }
-
-        String[] commandParts = userInput.split("\\s+", 2);
-        String actionWord = commandParts[0].toLowerCase();
-        switch (actionWord) {
+    private static void handleCommand(Command command) throws BroException {
+        switch (command.getAction()) {
         case "list":
-            ensureNoArguments(commandParts, "list");
+            PARSER.ensureNoArguments(command, "list");
             listTasks();
             break;
         case "mark":
-            changeTaskStatus(commandParts, true);
+            changeTaskStatus(command, true);
             break;
         case "unmark":
-            changeTaskStatus(commandParts, false);
+            changeTaskStatus(command, false);
             break;
         case "delete":
-            deleteTask(commandParts);
+            deleteTask(command);
             break;
         case "todo":
-            addTodo(commandParts);
+            addTodo(command);
             break;
         case "deadline":
-            addDeadline(commandParts);
+            addDeadline(command);
             break;
         case "event":
-            addEvent(commandParts);
+            addEvent(command);
             break;
         default:
             throw new BroException("I don't recognize that command. Try todo, deadline, event, "
@@ -101,8 +87,8 @@ public class Bro {
     }
 
     /** Adds a todo after checking that its description is present. */
-    private static void addTodo(String[] commandParts) throws BroException {
-        String description = requireArgument(commandParts, "A todo needs a description. "
+    private static void addTodo(Command command) throws BroException {
+        String description = PARSER.requireArgument(command, "A todo needs a description. "
                 + "Try: todo <description>.");
         ToDos newToDo = new ToDos(description);
         userTasks.add(newToDo);
@@ -114,14 +100,8 @@ public class Bro {
     }
 
     /** Adds a deadline after validating its description and /by component. */
-    private static void addDeadline(String[] commandParts) throws BroException {
-        String rest = requireArgument(commandParts, DEADLINE_USAGE);
-        String[] parts = rest.split("\\s*/by\\s*", -1);
-        if (parts.length != 2 || parts[0].isBlank() || parts[1].isBlank()) {
-            throw new BroException(DEADLINE_USAGE);
-        }
-
-        Deadlines newDeadline = createDeadline(parts[1].trim(), parts[0].trim());
+    private static void addDeadline(Command command) throws BroException {
+        Deadlines newDeadline = PARSER.parseDeadline(command);
         userTasks.add(newDeadline);
         saveTasks();
         System.out.println("Got it. I've added: \n");
@@ -129,42 +109,9 @@ public class Bro {
         System.out.println("Now you have " + userTasks.size() + " tasks in the list");
     }
 
-    /**
-     * Creates a deadline from either an ISO date or the assignment's day/month/year time format.
-     *
-     * @param dueText text following the command's {@code /by} marker.
-     * @param description task description supplied before the marker.
-     * @return a deadline that retains whether the user supplied a time.
-     * @throws BroException if the date or time does not match a supported, valid format.
-     */
-    static Deadlines createDeadline(String dueText, String description) throws BroException {
-        try {
-            LocalDateTime dueDateTime = LocalDateTime.parse(dueText, DATE_TIME_INPUT_FORMAT);
-            return new Deadlines(dueDateTime, description);
-        } catch (DateTimeParseException ignored) {
-            try {
-                LocalDate dueDate = LocalDate.parse(dueText, DATE_INPUT_FORMAT);
-                return new Deadlines(dueDate, description);
-            } catch (DateTimeParseException exception) {
-                throw new BroException(DEADLINE_USAGE);
-            }
-        }
-    }
-
     /** Adds an event after validating its description, start, and end components. */
-    private static void addEvent(String[] commandParts) throws BroException {
-        String rest = requireArgument(commandParts, "Use: event <description> /from <start> /to <end>.");
-        String[] fromSplit = rest.split("\\s*/from\\s*", -1);
-        if (fromSplit.length != 2 || fromSplit[0].isBlank()) {
-            throw new BroException("Use: event <description> /from <start> /to <end>.");
-        }
-
-        String[] toSplit = fromSplit[1].split("\\s*/to\\s*", -1);
-        if (toSplit.length != 2 || toSplit[0].isBlank() || toSplit[1].isBlank()) {
-            throw new BroException("Use: event <description> /from <start> /to <end>.");
-        }
-
-        Events newEvent = new Events(toSplit[0].trim(), toSplit[1].trim(), fromSplit[0].trim());
+    private static void addEvent(Command command) throws BroException {
+        Events newEvent = PARSER.parseEvent(command);
         userTasks.add(newEvent);
         saveTasks();
         System.out.println("Got it. I've added: \n");
@@ -173,9 +120,9 @@ public class Bro {
     }
 
     /** Marks or unmarks the requested task after validating its index. */
-    private static void changeTaskStatus(String[] commandParts, boolean done) throws BroException {
+    private static void changeTaskStatus(Command command, boolean done) throws BroException {
         String operation = done ? "mark" : "unmark";
-        int index = getTaskIndex(commandParts, operation);
+        int index = PARSER.parseTaskIndex(command, operation, userTasks.size());
 
         Task chosenTask = userTasks.getTask(index - 1);
         chosenTask.isDone = done;
@@ -185,54 +132,13 @@ public class Bro {
     }
 
     /** Removes the requested task and reports the remaining list size. */
-    private static void deleteTask(String[] commandParts) throws BroException {
-        int index = getTaskIndex(commandParts, "delete");
+    private static void deleteTask(Command command) throws BroException {
+        int index = PARSER.parseTaskIndex(command, "delete", userTasks.size());
         Task removedTask = userTasks.removeTask(index - 1);
         saveTasks();
         System.out.println("Noted. I've removed:");
         System.out.println(removedTask);
         System.out.println("Now you have " + userTasks.size() + " tasks in the list");
-    }
-
-    /** Parses and validates a task index shared by mark, unmark, and delete. */
-    private static int getTaskIndex(String[] commandParts, String operation) throws BroException {
-        String argument = requireArgument(commandParts, "Use: " + operation + " <task number>.");
-        if (argument.split("\\s+").length != 1) {
-            throw new BroException("Use: " + operation + " <task number>.");
-        }
-
-        int index;
-        try {
-            index = Integer.parseInt(argument);
-        } catch (NumberFormatException exception) {
-            throw new BroException("Task number must be a positive whole number.");
-        }
-        if (index < 1) {
-            throw new BroException("Task number must be a positive whole number.");
-        }
-        if (userTasks.isEmpty()) {
-            throw new BroException("There are no tasks to " + operation + " yet.");
-        }
-        if (index > userTasks.size()) {
-            throw new BroException("Task number must be between 1 and " + userTasks.size() + ".");
-        }
-        return index;
-    }
-
-    /** Returns a required command argument or throws an exception with its usage hint. */
-    private static String requireArgument(String[] commandParts, String errorMessage) throws BroException {
-        if (commandParts.length < 2 || commandParts[1].isBlank()) {
-            throw new BroException(errorMessage);
-        }
-        return commandParts[1].trim();
-    }
-
-    /** Rejects arguments for commands that should stand alone. */
-    private static void ensureNoArguments(String[] commandParts, String command) throws BroException {
-        if (commandParts.length > 1) {
-            throw new BroException("The " + command + " command does not take arguments. Try: "
-                    + command + ".");
-        }
     }
 
     /** Displays a consistent, recoverable error message without ending the session. */
