@@ -26,6 +26,10 @@ Unless the user says otherwise, assume that you are assisting a student working 
 
 ## Project-local standards
 
+Read the relevant project-local skill before changing Java code, reviewing Java
+code, or preparing Git history. The skill files are versioned project
+requirements, not optional suggestions.
+
 All Java source and test code in this repository must follow
 `.codex/skills/seedu-java-coding-standard/SKILL.md`. In particular, keep every
 class in a named lower-case package, use the `bro` package for the current
@@ -46,7 +50,7 @@ Ensure that Java 25 is used when running the application or build tasks. On macO
 
 Aim to cover approximately the highest-value 50% of non-trivial public methods
 with JUnit tests, prioritizing core parsing, persistence, task management, and
-user-interface behavior. Update the relevant JUnit tests after every code
+user-interface behavior. Update the relevant JUnit tests after every Java code
 change so the coverage target remains satisfied.
 
 ## Git

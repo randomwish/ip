@@ -22,12 +22,14 @@ Good subject: `Java style: Add package declarations`
 - Explain WHAT changed and WHY it changed, not HOW the diff implements it.
 - Structure the explanation as the present situation, why it needs to change, the imperative change, why that approach is appropriate, and any other relevant information.
 - Avoid words such as `currently` and `originally`; the present situation is implied. Do not repeat information already clear from code comments.
+- Use present tense for the situation and imperative mood for the requested change; use `Let's` only when it makes the change section easier to read.
 - Split an overlong description into smaller commits when the changes are not one coherent unit.
 
 ## Branch names
 
 - Use meaningful kebab-case keywords, such as `refactor-ui-tests`.
 - For issue-related work, use `issueNumber-keywords-from-issue-title`.
+- Keep branch names specific enough to identify the increment or area being developed.
 
 ## Review checklist
 
