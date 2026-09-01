@@ -1,0 +1,89 @@
+.root {
+    -fx-background-color: #f4f7fb;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-size: 14px;
+}
+
+.header {
+    -fx-background-color: linear-gradient(to right, #1f4d78, #2878a9);
+}
+
+.title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.subtitle {
+    -fx-text-fill: #d8efff;
+}
+
+.chat-scroll,
+.chat-scroll > .viewport {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.dialog-container {
+    -fx-background-color: #f4f7fb;
+}
+
+.dialog-label {
+    -fx-background-radius: 14px;
+    -fx-padding: 10px 14px;
+}
+
+.user-dialog {
+    -fx-background-color: #2878a9;
+    -fx-text-fill: white;
+}
+
+.bro-dialog {
+    -fx-background-color: white;
+    -fx-border-color: #dae2ec;
+    -fx-border-radius: 14px;
+    -fx-text-fill: #223044;
+}
+
+.user-avatar {
+    -fx-fill: #ffb547;
+}
+
+.bro-avatar {
+    -fx-fill: #2878a9;
+}
+
+.avatar-initial {
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.composer {
+    -fx-background-color: white;
+    -fx-border-color: #dae2ec transparent transparent transparent;
+}
+
+.text-field {
+    -fx-background-color: #f4f7fb;
+    -fx-background-radius: 8px;
+    -fx-border-color: #c8d3df;
+    -fx-border-radius: 8px;
+    -fx-padding: 10px 12px;
+}
+
+.text-field:focused {
+    -fx-border-color: #2878a9;
+}
+
+.button {
+    -fx-background-color: #2878a9;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 18px;
+    -fx-text-fill: white;
+}
+
+.button:hover {
+    -fx-background-color: #1f648f;
+}

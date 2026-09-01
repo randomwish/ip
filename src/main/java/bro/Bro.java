@@ -21,6 +21,12 @@ public class Bro {
     private final Ui ui;
     private final Parser parser;
     private TaskList tasks;
+    private boolean isLoaded;
+
+    /** Creates Bro for the graphical interface using the default storage path. */
+    public Bro() {
+        this(new Storage(DEFAULT_FILE_PATH), Ui.silent(), new Parser());
+    }
 
     /** Creates Bro with storage at the supplied file path and the process console as its UI. */
     public Bro(String filePath) {
@@ -33,31 +39,59 @@ public class Bro {
         this.ui = Objects.requireNonNull(ui);
         this.parser = Objects.requireNonNull(parser);
         this.tasks = new TaskList();
+        this.isLoaded = false;
     }
 
     /** Runs the chatbot until the user says goodbye or closes the input. */
     public void run() {
         ui.showWelcome();
-        try {
-            tasks = storage.load();
-        } catch (BroException exception) {
-            ui.showError(exception.getMessage());
-            tasks = new TaskList();
-        }
+        loadTasks();
 
         String userInput;
         while ((userInput = ui.readCommand()) != null) {
-            if (userInput.equalsIgnoreCase("bye")) {
+            getResponse(userInput);
+            if (isExitCommand(userInput)) {
                 break;
             }
-
-            try {
-                handleCommand(parser.parseCommand(userInput));
-            } catch (BroException exception) {
-                ui.showError(exception.getMessage());
-            }
         }
-        ui.showGoodbye();
+        if (userInput == null) {
+            ui.showGoodbye();
+        }
+    }
+
+    /** Returns Bro's greeting and reports any recoverable storage-loading problem. */
+    public String getWelcomeMessage() {
+        String loadingError = loadTasks();
+        return loadingError == null
+                ? ui.getWelcomeMessage()
+                : ui.getWelcomeMessage() + "\n" + loadingError;
+    }
+
+    /**
+     * Processes one user message and returns the response shown by the console or GUI.
+     *
+     * @param userInput Raw command entered by the user.
+     * @return Formatted response generated after processing the command.
+     */
+    public String getResponse(String userInput) {
+        String loadingError = loadTasks();
+        if (loadingError != null) {
+            return loadingError;
+        }
+        if (isExitCommand(userInput)) {
+            return ui.showGoodbye();
+        }
+
+        try {
+            return handleCommand(parser.parseCommand(userInput));
+        } catch (BroException exception) {
+            return ui.showError(exception.getMessage());
+        }
+    }
+
+    /** Returns whether the input is Bro's exit command. */
+    public boolean isExitCommand(String userInput) {
+        return userInput != null && userInput.trim().equalsIgnoreCase("bye");
     }
 
     /** Starts Bro with its default relative storage path. */
@@ -66,33 +100,25 @@ public class Bro {
     }
 
     /** Dispatches one parsed command, throwing a BroException for invalid input. */
-    private void handleCommand(Command command) throws BroException {
+    private String handleCommand(Command command) throws BroException {
         switch (command.getAction()) {
         case "list":
             parser.ensureNoArguments(command, "list");
-            ui.showTaskList(tasks);
-            break;
+            return ui.showTaskList(tasks);
         case "find":
-            findTasks(command);
-            break;
+            return findTasks(command);
         case "mark":
-            changeTaskStatus(command, true);
-            break;
+            return changeTaskStatus(command, true);
         case "unmark":
-            changeTaskStatus(command, false);
-            break;
+            return changeTaskStatus(command, false);
         case "delete":
-            deleteTask(command);
-            break;
+            return deleteTask(command);
         case "todo":
-            addTodo(command);
-            break;
+            return addTodo(command);
         case "deadline":
-            addDeadline(command);
-            break;
+            return addDeadline(command);
         case "event":
-            addEvent(command);
-            break;
+            return addEvent(command);
         default:
             throw new BroException("I don't recognize that command. Try todo, deadline, event, "
                     + "list, find, mark, unmark, delete, or bye.");
@@ -100,53 +126,69 @@ public class Bro {
     }
 
     /** Finds tasks whose descriptions contain the requested keyword. */
-    private void findTasks(Command command) throws BroException {
+    private String findTasks(Command command) throws BroException {
         String keyword = parser.requireArgument(command, "Use: find <keyword>.");
-        ui.showFindResults(tasks.findTasks(keyword));
+        return ui.showFindResults(tasks.findTasks(keyword));
     }
 
     /** Adds a todo after checking that its description is present. */
-    private void addTodo(Command command) throws BroException {
+    private String addTodo(Command command) throws BroException {
         String description = parser.requireArgument(command, "A todo needs a description. "
                 + "Try: todo <description>.");
         ToDos newToDo = new ToDos(description);
         tasks.add(newToDo);
         storage.save(tasks);
-        ui.showTaskAdded(newToDo, tasks.size());
+        return ui.showTaskAdded(newToDo, tasks.size());
     }
 
     /** Adds a deadline after validating its description and /by component. */
-    private void addDeadline(Command command) throws BroException {
+    private String addDeadline(Command command) throws BroException {
         Deadlines newDeadline = parser.parseDeadline(command);
         tasks.add(newDeadline);
         storage.save(tasks);
-        ui.showTaskAdded(newDeadline, tasks.size());
+        return ui.showTaskAdded(newDeadline, tasks.size());
     }
 
     /** Adds an event after validating its description, start, and end components. */
-    private void addEvent(Command command) throws BroException {
+    private String addEvent(Command command) throws BroException {
         Events newEvent = parser.parseEvent(command);
         tasks.add(newEvent);
         storage.save(tasks);
-        ui.showTaskAdded(newEvent, tasks.size());
+        return ui.showTaskAdded(newEvent, tasks.size());
     }
 
     /** Marks or unmarks the requested task after validating its index. */
-    private void changeTaskStatus(Command command, boolean done) throws BroException {
-        String operation = done ? "mark" : "unmark";
+    private String changeTaskStatus(Command command, boolean isDone) throws BroException {
+        String operation = isDone ? "mark" : "unmark";
         int index = parser.parseTaskIndex(command, operation, tasks.size());
 
         Task chosenTask = tasks.getTask(index - 1);
-        chosenTask.setDone(done);
+        chosenTask.setDone(isDone);
         storage.save(tasks);
-        ui.showTaskStatusChanged(done, chosenTask);
+        return ui.showTaskStatusChanged(isDone, chosenTask);
     }
 
     /** Removes the requested task and reports the remaining list size. */
-    private void deleteTask(Command command) throws BroException {
+    private String deleteTask(Command command) throws BroException {
         int index = parser.parseTaskIndex(command, "delete", tasks.size());
         Task removedTask = tasks.removeTask(index - 1);
         storage.save(tasks);
-        ui.showTaskDeleted(removedTask, tasks.size());
+        return ui.showTaskDeleted(removedTask, tasks.size());
+    }
+
+    /** Loads stored tasks once, returning a formatted recoverable error when loading fails. */
+    private String loadTasks() {
+        if (isLoaded) {
+            return null;
+        }
+
+        isLoaded = true;
+        try {
+            tasks = storage.load();
+            return null;
+        } catch (BroException exception) {
+            tasks = new TaskList();
+            return ui.showError(exception.getMessage());
+        }
     }
 }
