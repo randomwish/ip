@@ -102,4 +102,12 @@ class UiTest {
 
         assertEquals("Goodbye!\n", output.toString());
     }
+
+    /** The compact greeting omits the console-only banner used by graphical interfaces. */
+    @Test
+    void getWelcomeMessage_returnsGreetingWithoutBanner() {
+        Ui ui = new Ui(new Scanner(""), new PrintStream(new ByteArrayOutputStream()));
+
+        assertEquals("Hello, I'm Bro! What drink do you want?", ui.getWelcomeMessage());
+    }
 }
