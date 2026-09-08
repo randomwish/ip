@@ -82,4 +82,15 @@ class TaskListTest {
 
         assertEquals(List.of(firstTask, thirdTask), tasks.findTasks("book"));
     }
+
+    /** Multiple partial terms match descriptions in any order while excluding incomplete matches. */
+    @Test
+    void findTasks_multiplePartialTerms_matchesAllTermsInAnyOrder() {
+        Task firstTask = new ToDos("Meeting about Java projects");
+        Task secondTask = new ToDos("Read a book about Java");
+        Task thirdTask = new ToDos("Plan the project meeting");
+        TaskList tasks = new TaskList(List.of(firstTask, secondTask, thirdTask));
+
+        assertEquals(List.of(firstTask, thirdTask), tasks.findTasks("pro meet"));
+    }
 }

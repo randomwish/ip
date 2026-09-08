@@ -51,15 +51,29 @@ public class TaskList {
     }
 
     /**
-     * Returns tasks whose descriptions contain the supplied keyword, ignoring letter case.
+     * Returns tasks whose descriptions contain every supplied search term, ignoring letter case.
      *
-     * @param keyword Keyword to search for in task descriptions.
+     * <p>Each term is matched as a partial substring, so users can search with incomplete words
+     * and can provide terms in any order.</p>
+     *
+     * @param keyword Keywords to search for in task descriptions.
      * @return Matching tasks in their original list order.
      */
     public List<Task> findTasks(String keyword) {
-        String normalizedKeyword = Objects.requireNonNull(keyword).trim().toLowerCase(Locale.ROOT);
+        String[] searchTerms = Objects.requireNonNull(keyword).trim().toLowerCase(Locale.ROOT).split("\\s+");
         return tasks.stream()
-                .filter(task -> task.getDescription().toLowerCase(Locale.ROOT).contains(normalizedKeyword))
+                .filter(task -> containsAllSearchTerms(task, searchTerms))
                 .toList();
+    }
+
+    /** Returns whether a task description contains every requested partial search term. */
+    private boolean containsAllSearchTerms(Task task, String[] searchTerms) {
+        String description = task.getDescription().toLowerCase(Locale.ROOT);
+        for (String searchTerm : searchTerms) {
+            if (!description.contains(searchTerm)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
