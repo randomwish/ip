@@ -50,8 +50,10 @@ Ensure that Java 25 is used when running the application or build tasks. On macO
 
 Aim to cover approximately the highest-value 50% of non-trivial public methods
 with JUnit tests, prioritizing core parsing, persistence, task management, and
-user-interface behavior. Update the relevant JUnit tests after every Java code
-change so the coverage target remains satisfied.
+user-interface behavior. This is a prioritization goal, not a measured line or
+branch coverage claim. Update tests when behavior or contracts change; comments
+and formatting alone do not require test edits. Run the relevant existing checks
+and fix failures caused by the requested change without repeated approval.
 
 ## Git
 

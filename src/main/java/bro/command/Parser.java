@@ -96,6 +96,7 @@ public class Parser {
         if (index > taskCount) {
             throw new BroException("Task number must be between 1 and " + taskCount + ".");
         }
+        assert index >= 1 && index <= taskCount : "A parsed task number must be within the task list";
         return index;
     }
 
