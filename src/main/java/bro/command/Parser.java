@@ -96,6 +96,9 @@ public class Parser {
         if (index > taskCount) {
             throw new BroException("Task number must be between 1 and " + taskCount + ".");
         }
+
+        // All successful returns must identify an existing one-based task position.
+        assert index >= 1 && index <= taskCount : "successful task index must be in range";
         return index;
     }
 

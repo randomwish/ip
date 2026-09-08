@@ -162,6 +162,8 @@ public class Bro {
         String operation = isDone ? "mark" : "unmark";
         int index = parser.parseTaskIndex(command, operation, tasks.size());
 
+        // The parser validates the one-based index before this zero-based lookup.
+        assert index >= 1 && index <= tasks.size() : "validated task index must be in range";
         Task chosenTask = tasks.getTask(index - 1);
         chosenTask.setDone(isDone);
         storage.save(tasks);
@@ -171,6 +173,9 @@ public class Bro {
     /** Removes the requested task and reports the remaining list size. */
     private String deleteTask(Command command) throws BroException {
         int index = parser.parseTaskIndex(command, "delete", tasks.size());
+
+        // The parser validates the one-based index before this zero-based removal.
+        assert index >= 1 && index <= tasks.size() : "validated task index must be in range";
         Task removedTask = tasks.removeTask(index - 1);
         storage.save(tasks);
         return ui.showTaskDeleted(removedTask, tasks.size());
@@ -185,6 +190,8 @@ public class Bro {
         isLoaded = true;
         try {
             tasks = storage.load();
+            // Storage.load() promises a task list even when the backing file is absent.
+            assert tasks != null : "storage must return a task list";
             return null;
         } catch (BroException exception) {
             tasks = new TaskList();

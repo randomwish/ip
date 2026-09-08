@@ -76,6 +76,8 @@ public class Storage {
                     + deadline.getDueDateTime() + " | " + (deadline.hasDueTime() ? "1" : "0");
         }
 
+        // Every task created by the parser or loader is one of Bro's three task types.
+        assert task instanceof Events : "task must be a supported Bro task type";
         Events event = (Events) task;
         return "E | " + done + " | " + task.getDescription()
                 + " | " + event.getStartTime() + " | " + event.getEndTime();
