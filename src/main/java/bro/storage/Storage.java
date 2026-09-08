@@ -18,6 +18,14 @@ import java.util.List;
 
 /** Loads tasks from a file and saves task lists in Bro's persistent format. */
 public class Storage {
+    private static final String FIELD_SEPARATOR = " | ";
+    private static final String FIELD_SEPARATOR_REGEX = " \\| ";
+    private static final String TODO_TYPE = "T";
+    private static final String DEADLINE_TYPE = "D";
+    private static final String EVENT_TYPE = "E";
+    private static final String INCOMPLETE_FLAG = "0";
+    private static final String COMPLETE_FLAG = "1";
+
     private final Path filePath;
 
     /** Creates storage backed by the supplied file path. */
@@ -68,51 +76,52 @@ public class Storage {
         String done = task.isDone() ? "1" : "0";
 
         if (task instanceof ToDos) {
-            return "T | " + done + " | " + task.getDescription();
+            return TODO_TYPE + FIELD_SEPARATOR + done + FIELD_SEPARATOR + task.getDescription();
         }
 
         if (task instanceof Deadlines deadline) {
-            return "D | " + done + " | " + task.getDescription() + " | "
-                    + deadline.getDueDateTime() + " | " + (deadline.hasDueTime() ? "1" : "0");
+            return DEADLINE_TYPE + FIELD_SEPARATOR + done + FIELD_SEPARATOR + task.getDescription()
+                    + FIELD_SEPARATOR + deadline.getDueDateTime() + FIELD_SEPARATOR
+                    + (deadline.hasDueTime() ? COMPLETE_FLAG : INCOMPLETE_FLAG);
         }
 
         Events event = (Events) task;
-        return "E | " + done + " | " + task.getDescription()
-                + " | " + event.getStartTime() + " | " + event.getEndTime();
+        return EVENT_TYPE + FIELD_SEPARATOR + done + FIELD_SEPARATOR + task.getDescription()
+                + FIELD_SEPARATOR + event.getStartTime() + FIELD_SEPARATOR + event.getEndTime();
     }
 
     /** Recreates one task from a line in Bro's saved task-file format. */
     private Task fromFileLine(String line) throws BroException {
-        String[] parts = line.split(" \\| ", -1);
+        String[] parts = line.split(FIELD_SEPARATOR_REGEX, -1);
 
-        if (parts.length < 3 || (!parts[1].equals("0") && !parts[1].equals("1"))) {
+        if (parts.length < 3 || (!parts[1].equals(INCOMPLETE_FLAG) && !parts[1].equals(COMPLETE_FLAG))) {
             throw new BroException("A saved task has an invalid format.");
         }
 
         Task task;
-        if (parts[0].equals("T") && parts.length == 3) {
+        if (parts[0].equals(TODO_TYPE) && parts.length == 3) {
             task = new ToDos(parts[2]);
-        } else if (parts[0].equals("D") && parts.length == 5) {
+        } else if (parts[0].equals(DEADLINE_TYPE) && parts.length == 5) {
             task = readDeadline(parts);
-        } else if (parts[0].equals("E") && parts.length == 5) {
+        } else if (parts[0].equals(EVENT_TYPE) && parts.length == 5) {
             task = new Events(parts[3], parts[4], parts[2]);
         } else {
             throw new BroException("A saved task has an invalid format.");
         }
 
-        task.setDone(parts[1].equals("1"));
+        task.setDone(parts[1].equals(COMPLETE_FLAG));
         return task;
     }
 
     /** Recreates a deadline from its ISO-8601 date-time and time-presence flag. */
     private Deadlines readDeadline(String[] parts) throws BroException {
-        if (!parts[4].equals("0") && !parts[4].equals("1")) {
+        if (!parts[4].equals(INCOMPLETE_FLAG) && !parts[4].equals(COMPLETE_FLAG)) {
             throw new BroException("A saved task has an invalid format.");
         }
 
         try {
             LocalDateTime dueDateTime = LocalDateTime.parse(parts[3]);
-            return new Deadlines(dueDateTime, parts[4].equals("1"), parts[2]);
+            return new Deadlines(dueDateTime, parts[4].equals(COMPLETE_FLAG), parts[2]);
         } catch (DateTimeParseException exception) {
             throw new BroException("A saved task has an invalid format.");
         }
