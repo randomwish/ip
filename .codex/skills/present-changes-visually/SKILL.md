@@ -30,13 +30,15 @@ collapsed panels for unchanged files.
    branch, or a commit SHA. Use `WORKTREE` for current files.
 
 5. Confirm that the command succeeded and report the absolute path to the
-   generated page. Do not open a browser unless the user asks.
+   generated page. When the user asks to show changes visually, open the local
+   preview; keep file-only output when that is what the user requested.
 
 ## Verify output
 
 Check that the page exists and that the generator summary reports the expected
-changed-file count. For a visual review, open the generated HTML file in a
-browser or inspect its rendered page only when the user asks.
+changed-file count. When presenting a visual result, inspect the rendered page
+for a usable layout and the expected comparison. Report a rendering limitation
+if a preview is unavailable.
 
 ## Resource
 

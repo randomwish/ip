@@ -51,7 +51,10 @@ Apply these rules to every Java change in this repository. Treat the [SE-EDU Jav
 
 ## Change workflow
 
-1. Inspect the whole affected class and its callers before editing.
+1. Inspect the affected class and the callers relevant to the changed behavior
+   or contract. A comment or formatting edit does not require a caller survey.
 2. Preserve behavior while applying the naming, package, layout, visibility, and documentation rules.
 3. Check package declarations, imports, braces, line lengths, and public API Javadocs in every changed Java file.
-4. Run the project tests and relevant console tests with Java 25. Report any environment limitation instead of silently skipping verification.
+4. For behavior or contract changes, run the relevant project and console tests
+   with Java 25. Formatting or comment changes need proportionate checks. Report
+   environment limitations and fix failures caused by the requested change.

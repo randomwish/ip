@@ -1,6 +1,6 @@
 ---
 name: test-ui
-description: Run repeatable end-to-end tests for this project's console user interface from test/ui-test-plan.md. Use when adding, checking, or debugging console commands and their exact expected output, especially when a test session must stop at the first failure and show its input/output transcript.
+description: Run this project's planned console UI tests with isolated data and exact output matching; diagnose failures or verify command changes.
 ---
 
 # Test UI
@@ -38,29 +38,9 @@ To verify data loaded in a new application process, add an optional
 second time in the same temporary directory, then compares the concatenated
 output of both sessions with the expected-output block.
 
-```markdown
-## Test environment
-
-- **Setup command:** `javac -d out/production src/main/java/*.java`
-- **Timeout seconds:** `5`
-- **Output matching:** Exact, including blank lines and spaces.
-
-## Test case: greeting-and-exit
-
-**Aim:** Verify that the application greets the user and exits cleanly.
-
-**Run command:** `java -cp out/production bro.Bro`
-
-**Inputs:**
-```text
-bye
-```
-
-**Expected output:**
-```text
-... exact console output ...
-```
-```
+Use the setup and launch commands maintained in `test/ui-test-plan.md` and the
+project build configuration. Do not copy a separate compile recipe into this
+skill: package layout and JavaFX dependencies can change.
 
 ## Run the tests
 
@@ -74,13 +54,15 @@ bye
 
    Pass `--plan path/to/plan.md` to use a different plan.
 
-4. Show the harness transcript in the response. It records each program
-   command, the input lines, and the actual console output.
+4. Summarize successful runs. For a failure, show the relevant transcript and
+   mismatch; provide the full transcript when requested or needed to diagnose it.
 
 The harness compares output exactly (apart from Windows versus Unix line
 endings). It stops at the first failing case and prints the actual output,
-expected output, exit status, and a unified diff. Do not continue with later
-test cases after a failure.
+expected output, exit status, and a unified diff. Each invocation stops there.
+For a test-only audit, report the failure. During an authorized implementation
+task, fix failures caused by the change and rerun the harness to complete the
+remaining cases. Do not change expected output merely to hide a regression.
 
 ## Maintain the plan
 
