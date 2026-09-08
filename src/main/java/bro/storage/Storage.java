@@ -89,6 +89,8 @@ public class Storage {
                     + (deadline.hasDueTime() ? COMPLETE_FLAG : INCOMPLETE_FLAG);
         }
 
+        // Every task created by the parser or loader is one of Bro's three task types.
+        assert task instanceof Events : "task must be a supported Bro task type";
         Events event = (Events) task;
         return EVENT_TYPE + FIELD_SEPARATOR + done + FIELD_SEPARATOR + task.getDescription()
                 + FIELD_SEPARATOR + event.getStartTime() + FIELD_SEPARATOR + event.getEndTime();
