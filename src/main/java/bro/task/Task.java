@@ -2,9 +2,9 @@ package bro.task;
 
 /** Represents a task and its completion status. */
 public class Task {
-    protected String description;
-    protected boolean isDone;
-    protected final TaskType taskType;
+    private final String description;
+    private boolean isDone;
+    private final TaskType taskType;
 
     /** Creates a basic task, treated as a todo for display purposes. */
     public Task(String description) {

@@ -101,7 +101,12 @@ public class Bro {
 
     /** Dispatches one parsed command, throwing a BroException for invalid input. */
     private String handleCommand(Command command) throws BroException {
-        switch (command.getAction()) {
+        assert command != null : "A parsed command is required for dispatch";
+        assert tasks != null : "The task list must be available before dispatch";
+
+        String action = command.getAction();
+        assert !action.isBlank() : "A parsed command must have an action";
+        switch (action) {
         case "list":
             parser.ensureNoArguments(command, "list");
             return ui.showTaskList(tasks);
@@ -161,6 +166,7 @@ public class Bro {
     private String changeTaskStatus(Command command, boolean isDone) throws BroException {
         String operation = isDone ? "mark" : "unmark";
         int index = parser.parseTaskIndex(command, operation, tasks.size());
+        assert index >= 1 && index <= tasks.size() : "The parser must return a valid task number";
 
         // The parser validates the one-based index before this zero-based lookup.
         assert index >= 1 && index <= tasks.size() : "validated task index must be in range";
@@ -173,9 +179,8 @@ public class Bro {
     /** Removes the requested task and reports the remaining list size. */
     private String deleteTask(Command command) throws BroException {
         int index = parser.parseTaskIndex(command, "delete", tasks.size());
+        assert index >= 1 && index <= tasks.size() : "The parser must return a valid task number";
 
-        // The parser validates the one-based index before this zero-based removal.
-        assert index >= 1 && index <= tasks.size() : "validated task index must be in range";
         Task removedTask = tasks.removeTask(index - 1);
         storage.save(tasks);
         return ui.showTaskDeleted(removedTask, tasks.size());
@@ -190,8 +195,7 @@ public class Bro {
         isLoaded = true;
         try {
             tasks = storage.load();
-            // Storage.load() promises a task list even when the backing file is absent.
-            assert tasks != null : "storage must return a task list";
+            assert tasks != null : "A successful storage load must return a task list";
             return null;
         } catch (BroException exception) {
             tasks = new TaskList();

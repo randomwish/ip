@@ -2,8 +2,8 @@ package bro.task;
 
 /** Represents a task that occurs between a start and end time. */
 public class Events extends Task {
-    protected String dateline;
-    protected String startTime;
+    private final String dateline;
+    private final String startTime;
 
     /** Creates an event task with its start time, end time, and description. */
     public Events(String startTime, String deadline, String description) {
@@ -25,7 +25,7 @@ public class Events extends Task {
     /** Returns the event task in Bro's list format. */
     @Override
     public String toString() {
-        return formatTask(description + "(from: " + startTime + " to: " + dateline + ")");
+        return formatTask(getDescription() + "(from: " + startTime + " to: " + dateline + ")");
     }
 
 }

@@ -13,6 +13,8 @@ import javafx.stage.Stage;
 public class Main extends Application {
     private static final String MAIN_WINDOW_FXML = "/view/MainWindow.fxml";
     private static final String WINDOW_TITLE = "Bro";
+    private static final double MIN_WINDOW_HEIGHT = 520;
+    private static final double MIN_WINDOW_WIDTH = 380;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -21,8 +23,8 @@ public class Main extends Application {
         MainWindow mainWindow = loader.getController();
         mainWindow.setBro(new Bro());
 
-        stage.setMinHeight(520);
-        stage.setMinWidth(380);
+        stage.setMinHeight(MIN_WINDOW_HEIGHT);
+        stage.setMinWidth(MIN_WINDOW_WIDTH);
         stage.setScene(new Scene(root));
         stage.setTitle(WINDOW_TITLE);
         stage.show();
