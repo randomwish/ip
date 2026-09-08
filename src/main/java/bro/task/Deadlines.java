@@ -52,6 +52,6 @@ public class Deadlines extends Task {
     /** Returns the deadline task in Bro's list format. */
     @Override
     public String toString() {
-        return formatTask(description + "(by: " + formatDueDateTime() + ")");
+        return formatTask(getDescription() + "(by: " + formatDueDateTime() + ")");
     }
 }
