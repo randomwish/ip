@@ -73,7 +73,11 @@ public class Storage {
 
     /** Converts a task to one line in Bro's saved task-file format. */
     private String toFileLine(Task task) {
-        String done = task.isDone() ? "1" : "0";
+        assert task != null : "The task list must not contain null tasks";
+        assert task instanceof ToDos || task instanceof Deadlines || task instanceof Events
+                : "Every persisted task must have a supported task subtype";
+
+        String done = task.isDone() ? COMPLETE_FLAG : INCOMPLETE_FLAG;
 
         if (task instanceof ToDos) {
             return TODO_TYPE + FIELD_SEPARATOR + done + FIELD_SEPARATOR + task.getDescription();
