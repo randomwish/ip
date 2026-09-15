@@ -34,7 +34,19 @@ class ParserTest {
     /** Blank input is rejected before it can become an invalid command. */
     @Test
     void parseCommand_rejectsBlankInput() {
-        assertThrows(BroException.class, () -> new Parser().parseCommand("  "));
+        BroException exception = assertThrows(BroException.class,
+                () -> new Parser().parseCommand("  "));
+
+        assertEquals("I'm ready when you are—enter a command.", exception.getMessage());
+    }
+
+    /** Null input uses the same recovery prompt as blank console input. */
+    @Test
+    void parseCommand_rejectsNullInputWithRecoveryPrompt() {
+        BroException exception = assertThrows(BroException.class,
+                () -> new Parser().parseCommand(null));
+
+        assertEquals("I'm ready when you are—enter a command.", exception.getMessage());
     }
 
     /** A required argument is returned after command construction has removed surrounding whitespace. */
@@ -81,19 +93,75 @@ class ParserTest {
         assertEquals("[E] [ ] project meeting(from: 2pm to: 4pm)", event.toString());
     }
 
+    /** Missing or malformed deadline components return the documented usage hint. */
+    @Test
+    void parseDeadline_invalidCommand_throwsDeadlineUsageMessage() {
+        Parser parser = new Parser();
+        String usageMessage = "My format: deadline <description> /by <yyyy-MM-dd> "
+                + "or <d/M/yyyy HHmm>.";
+
+        BroException missingDate = assertThrows(BroException.class,
+                () -> parser.parseDeadline(new Command("deadline", "submit report")));
+        BroException missingDescription = assertThrows(BroException.class,
+                () -> parser.parseDeadline(new Command("deadline", " /by 2019-10-15")));
+        BroException invalidDate = assertThrows(BroException.class,
+                () -> parser.parseDeadline(new Command("deadline", "submit report /by 2019-02-29")));
+
+        assertEquals(usageMessage, missingDate.getMessage());
+        assertEquals(usageMessage, missingDescription.getMessage());
+        assertEquals(usageMessage, invalidDate.getMessage());
+    }
+
+    /** Missing or malformed event components return the documented usage hint. */
+    @Test
+    void parseEvent_invalidCommand_throwsEventUsageMessage() {
+        Parser parser = new Parser();
+        String usageMessage = "My format: event <description> /from <start> /to <end>.";
+
+        BroException missingFrom = assertThrows(BroException.class,
+                () -> parser.parseEvent(new Command("event", "project meeting")));
+        BroException missingTo = assertThrows(BroException.class,
+                () -> parser.parseEvent(new Command("event", "project meeting /from 2pm")));
+        BroException missingDescription = assertThrows(BroException.class,
+                () -> parser.parseEvent(new Command("event", " /from 2pm /to 4pm")));
+
+        assertEquals(usageMessage, missingFrom.getMessage());
+        assertEquals(usageMessage, missingTo.getMessage());
+        assertEquals(usageMessage, missingDescription.getMessage());
+    }
+
     /** A task index accepts one-based positions and rejects invalid or out-of-range values. */
     @Test
     void parseTaskIndex_invalidValues_throwValidationErrors() throws BroException {
         Parser parser = new Parser();
 
         assertEquals(2, parser.parseTaskIndex(new Command("mark", "2"), "mark", 3));
-        assertThrows(BroException.class,
+        BroException zero = assertThrows(BroException.class,
                 () -> parser.parseTaskIndex(new Command("mark", "0"), "mark", 3));
-        assertThrows(BroException.class,
+        BroException tooLarge = assertThrows(BroException.class,
                 () -> parser.parseTaskIndex(new Command("mark", "4"), "mark", 3));
-        assertThrows(BroException.class,
+        BroException nonNumeric = assertThrows(BroException.class,
                 () -> parser.parseTaskIndex(new Command("mark", "abc"), "mark", 3));
-        assertThrows(BroException.class,
+        BroException multiple = assertThrows(BroException.class,
                 () -> parser.parseTaskIndex(new Command("mark", "1 2"), "mark", 3));
+
+        assertEquals("I need a positive whole task number.", zero.getMessage());
+        assertEquals("I can only target tasks 1 through 3.", tooLarge.getMessage());
+        assertEquals("I need a positive whole task number.", nonNumeric.getMessage());
+        assertEquals("I need a task number. Use: mark <task number>.", multiple.getMessage());
+    }
+
+    /** Missing task numbers and empty task lists produce operation-specific guidance. */
+    @Test
+    void parseTaskIndex_missingOrEmptyTaskList_throwsHelpfulMessages() {
+        Parser parser = new Parser();
+
+        BroException missing = assertThrows(BroException.class,
+                () -> parser.parseTaskIndex(new Command("delete", ""), "delete", 2));
+        BroException empty = assertThrows(BroException.class,
+                () -> parser.parseTaskIndex(new Command("delete", "1"), "delete", 0));
+
+        assertEquals("I need a task number. Use: delete <task number>.", missing.getMessage());
+        assertEquals("I have no tasks to delete yet.", empty.getMessage());
     }
 }

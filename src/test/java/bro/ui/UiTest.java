@@ -1,6 +1,7 @@
 package bro.ui;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -23,6 +24,37 @@ class UiTest {
         assertEquals("list", ui.readCommand());
     }
 
+    /** Exhausted input is reported as end-of-session rather than as an empty command. */
+    @Test
+    void readCommand_exhaustedInput_returnsNull() {
+        Ui ui = new Ui(new Scanner(""), new PrintStream(new ByteArrayOutputStream()));
+
+        assertNull(ui.readCommand());
+    }
+
+    /** The console welcome response includes both Bro's banner and greeting. */
+    @Test
+    void showWelcome_newSession_printsBannerAndGreeting() {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        Ui ui = new Ui(new Scanner(""), new PrintStream(output));
+
+        String response = ui.showWelcome();
+
+        assertEquals(response, output.toString());
+        assertTrue(response.contains("B R O // TASK HQ"));
+        assertTrue(response.contains("YOUR PRODUCTIVITY WINGMAN"));
+        assertTrue(response.contains("Yo, I'm Bro — your laid-back productivity wingman."));
+    }
+
+    /** A silent UI still returns formatted responses while discarding console output. */
+    @Test
+    void silent_returnsResponsesWithoutInput() {
+        Ui ui = Ui.silent();
+
+        assertNull(ui.readCommand());
+        assertEquals("", ui.showTaskList(new TaskList()));
+    }
+
     /** Adding a todo uses Bro's friendly task-tracking phrase and singular count. */
     @Test
     void showTaskAdded_todo_usesBroStyleOutput() {
@@ -32,6 +64,19 @@ class UiTest {
         ui.showTaskAdded(new ToDos("read book"), 1);
 
         assertEquals("Nice, bro — I've logged:\n\n[T] [ ] read book\nBro is keeping tabs on 1 task.\n",
+                output.toString());
+    }
+
+    /** Adding a second task uses the plural count and retains typed task formatting. */
+    @Test
+    void showTaskAdded_multipleTasks_usesPluralCount() {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        Ui ui = new Ui(new Scanner(""), new PrintStream(output));
+
+        ui.showTaskAdded(new Events("2pm", "4pm", "project meeting"), 2);
+
+        assertEquals("Nice, bro — I've logged:\n\n[E] [ ] project meeting(from: 2pm to: 4pm)\n"
+                        + "Bro is keeping tabs on 2 tasks.\n",
                 output.toString());
     }
 
@@ -64,6 +109,17 @@ class UiTest {
                 output.toString());
     }
 
+    /** An empty task list produces no numbered rows. */
+    @Test
+    void showTaskList_emptyList_printsNothing() {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        Ui ui = new Ui(new Scanner(""), new PrintStream(output));
+
+        ui.showTaskList(new TaskList());
+
+        assertEquals("", output.toString());
+    }
+
     /** Find results use the standard border, heading, numbering, and task formatting. */
     @Test
     void showFindResults_matchingTasks_printsNumberedResults() {
@@ -80,6 +136,20 @@ class UiTest {
                 output.toString());
     }
 
+    /** Find output keeps its heading and borders even when no task matches. */
+    @Test
+    void showFindResults_noMatches_printsEmptyResultFrame() {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        Ui ui = new Ui(new Scanner(""), new PrintStream(output));
+
+        ui.showFindResults(List.of());
+
+        assertEquals("    ============================================================\n"
+                        + "     Bro found these matching tasks:\n"
+                        + "    ============================================================\n",
+                output.toString());
+    }
+
     /** Status output reflects a task's completion marker and description. */
     @Test
     void showTaskStatusChanged_completedTask_printsStatusAndTask() {
@@ -91,6 +161,34 @@ class UiTest {
         ui.showTaskStatusChanged(true, task);
 
         assertEquals("Let's go, bro — this task is complete!\n[X] read book\n", output.toString());
+    }
+
+    /** Unmarking a task uses a distinct reassuring status message and incomplete marker. */
+    @Test
+    void showTaskStatusChanged_incompleteTask_printsIncompleteStatus() {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        Ui ui = new Ui(new Scanner(""), new PrintStream(output));
+        ToDos task = new ToDos("read book");
+
+        ui.showTaskStatusChanged(false, task);
+
+        assertEquals("No stress, bro — this task is marked incomplete.\n[ ] read book\n",
+                output.toString());
+    }
+
+    /** Deleting a task uses singular and plural count grammar at the two boundary values. */
+    @Test
+    void showTaskDeleted_remainingCount_formatsTaskGrammar() {
+        ByteArrayOutputStream oneTaskOutput = new ByteArrayOutputStream();
+        Ui oneTaskUi = new Ui(new Scanner(""), new PrintStream(oneTaskOutput));
+        oneTaskUi.showTaskDeleted(new ToDos("read book"), 1);
+
+        ByteArrayOutputStream noTaskOutput = new ByteArrayOutputStream();
+        Ui noTaskUi = new Ui(new Scanner(""), new PrintStream(noTaskOutput));
+        noTaskUi.showTaskDeleted(new ToDos("write notes"), 0);
+
+        assertTrue(oneTaskOutput.toString().contains("Bro is keeping tabs on 1 task."));
+        assertTrue(noTaskOutput.toString().contains("Bro is keeping tabs on 0 tasks."));
     }
 
     /** The session closing method emits Bro's friendly sign-off. */

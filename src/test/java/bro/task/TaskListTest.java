@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -72,6 +73,19 @@ class TaskListTest {
         assertEquals(1, tasks.size());
     }
 
+    /** Constructing a task list copies its source collection instead of retaining external ownership. */
+    @Test
+    void constructor_sourceList_isCopied() {
+        List<Task> sourceTasks = new ArrayList<>();
+        sourceTasks.add(new ToDos("read book"));
+
+        TaskList tasks = new TaskList(sourceTasks);
+        sourceTasks.add(new ToDos("write notes"));
+
+        assertEquals(1, tasks.size());
+        assertEquals("read book", tasks.getTask(0).getDescription());
+    }
+
     /** A find keyword matches descriptions without changing task order or requiring letter case. */
     @Test
     void findTasks_keyword_matchesDescriptionsCaseInsensitivelyInOrder() {
@@ -92,5 +106,23 @@ class TaskListTest {
         TaskList tasks = new TaskList(List.of(firstTask, secondTask, thirdTask));
 
         assertEquals(List.of(firstTask, thirdTask), tasks.findTasks("pro meet"));
+    }
+
+    /** A keyword with no matching description returns an empty result without changing the list. */
+    @Test
+    void findTasks_noMatch_returnsEmptyList() {
+        Task task = new ToDos("read book");
+        TaskList tasks = new TaskList(List.of(task));
+
+        assertTrue(tasks.findTasks("meeting").isEmpty());
+        assertEquals(1, tasks.size());
+    }
+
+    /** Searching with a null keyword is rejected rather than treated as an accidental wildcard. */
+    @Test
+    void findTasks_nullKeyword_throwsNullPointerException() {
+        TaskList tasks = new TaskList(List.of(new ToDos("read book")));
+
+        assertThrows(NullPointerException.class, () -> tasks.findTasks(null));
     }
 }

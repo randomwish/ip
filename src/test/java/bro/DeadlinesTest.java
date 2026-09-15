@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import bro.command.Command;
@@ -35,6 +36,36 @@ class DeadlinesTest {
         assertEquals(LocalDateTime.of(2019, 12, 2, 18, 0), deadline.getDueDateTime());
         assertTrue(deadline.hasDueTime());
         assertEquals("[D] [ ] return book(by: Dec 2 2019 6:00PM)", deadline.toString());
+    }
+
+    /** Direct date-only construction preserves the date and does not invent a due time. */
+    @Test
+    void constructor_dateOnlyDeadline_preservesDateOnlySemantics() {
+        Deadlines deadline = new Deadlines(LocalDate.of(2019, 10, 15), "submit report");
+
+        assertEquals(LocalDateTime.of(2019, 10, 15, 0, 0), deadline.getDueDateTime());
+        assertFalse(deadline.hasDueTime());
+        assertEquals("[D] [ ] submit report(by: Oct 15 2019)", deadline.toString());
+    }
+
+    /** A midnight deadline with an explicit time is formatted with the 12-hour clock correctly. */
+    @Test
+    void constructorTimedDeadline_midnight_usesAmDisplay() {
+        Deadlines deadline = new Deadlines(LocalDateTime.of(2019, 12, 2, 0, 0), "return book");
+
+        assertTrue(deadline.hasDueTime());
+        assertEquals("[D] [ ] return book(by: Dec 2 2019 12:00AM)", deadline.toString());
+    }
+
+    /** Restoring a deadline can retain a date-only flag independently of the stored date-time value. */
+    @Test
+    void constructorRestoredDeadline_retainsDueTimeFlag() {
+        Deadlines deadline = new Deadlines(
+                LocalDateTime.of(2019, 12, 2, 18, 0), false, "return book");
+
+        assertEquals(LocalDateTime.of(2019, 12, 2, 18, 0), deadline.getDueDateTime());
+        assertFalse(deadline.hasDueTime());
+        assertEquals("[D] [ ] return book(by: Dec 2 2019)", deadline.toString());
     }
 
     /** Invalid calendar values and invalid 24-hour times are rejected instead of being stored. */
