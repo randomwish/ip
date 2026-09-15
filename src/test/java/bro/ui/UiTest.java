@@ -23,19 +23,19 @@ class UiTest {
         assertEquals("list", ui.readCommand());
     }
 
-    /** Adding a todo preserves the existing output, including its established task-count spacing. */
+    /** Adding a todo uses Bro's friendly task-tracking phrase and singular count. */
     @Test
-    void showTaskAdded_preservesTodoOutput() {
+    void showTaskAdded_todo_usesBroStyleOutput() {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         Ui ui = new Ui(new Scanner(""), new PrintStream(output));
 
         ui.showTaskAdded(new ToDos("read book"), 1);
 
-        assertEquals("Got it. I've added: \n\n[T] [ ] read book\nNow you have1 tasks in the list\n",
+        assertEquals("Nice, bro — I've logged:\n\n[T] [ ] read book\nBro is keeping tabs on 1 task.\n",
                 output.toString());
     }
 
-    /** Error output includes the supplied message and the standard visual border. */
+    /** Error output includes Bro's voice, the supplied message, and the visual border. */
     @Test
     void showError_message_includesBorderAndText() {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -45,7 +45,8 @@ class UiTest {
 
         String renderedOutput = output.toString();
         assertTrue(renderedOutput.contains("Something went wrong."));
-        assertTrue(renderedOutput.contains("____________________________________________________________"));
+        assertTrue(renderedOutput.contains("Bro says: Something went wrong."));
+        assertTrue(renderedOutput.contains("============================================================"));
     }
 
     /** A task list is rendered in insertion order with one-based display numbering. */
@@ -71,11 +72,11 @@ class UiTest {
 
         ui.showFindResults(List.of(new ToDos("read book"), new ToDos("return book")));
 
-        assertEquals("    ____________________________________________________________\n"
-                        + "     Here are the matching tasks in your list:\n"
+        assertEquals("    ============================================================\n"
+                        + "     Bro found these matching tasks:\n"
                         + "1. [T] [ ] read book\n"
                         + "2. [T] [ ] return book\n"
-                        + "    ____________________________________________________________\n",
+                        + "    ============================================================\n",
                 output.toString());
     }
 
@@ -89,10 +90,10 @@ class UiTest {
 
         ui.showTaskStatusChanged(true, task);
 
-        assertEquals("Ok this item is marked!\n[X] read book\n", output.toString());
+        assertEquals("Let's go, bro — this task is complete!\n[X] read book\n", output.toString());
     }
 
-    /** The session closing method emits the expected goodbye line. */
+    /** The session closing method emits Bro's friendly sign-off. */
     @Test
     void showGoodbye_sessionEnds_printsGoodbye() {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -100,7 +101,7 @@ class UiTest {
 
         ui.showGoodbye();
 
-        assertEquals("Goodbye!\n", output.toString());
+        assertEquals("Catch you later, bro. Keep crushing that to-do list!\n", output.toString());
     }
 
     /** The compact greeting omits the console-only banner used by graphical interfaces. */
@@ -108,6 +109,7 @@ class UiTest {
     void getWelcomeMessage_returnsGreetingWithoutBanner() {
         Ui ui = new Ui(new Scanner(""), new PrintStream(new ByteArrayOutputStream()));
 
-        assertEquals("Hello, I'm Bro! What drink do you want?", ui.getWelcomeMessage());
+        assertEquals("Yo, I'm Bro — your laid-back productivity wingman. What are we getting done today?",
+                ui.getWelcomeMessage());
     }
 }

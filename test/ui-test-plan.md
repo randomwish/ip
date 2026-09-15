@@ -6,7 +6,7 @@ stops as soon as one case fails.
 
 ## Test environment
 
-- **Setup command:** `javac -d out/production $(find src/main/java -name '*.java' -print)`
+- **Setup command:** `./gradlew classes`
 - **Timeout seconds:** `5`
 - **Output matching:** Exact, including blank lines and spaces. Line-ending
   differences between Windows and Unix are ignored.
@@ -19,7 +19,7 @@ stops as soon as one case fails.
 
 **Aim:** Verify that the application shows its greeting and exits cleanly.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/build/classes/java/main bro.Bro`
 
 **Inputs:**
 ```text
@@ -28,21 +28,20 @@ bye
 
 **Expected output:**
 ```text
-  ____                
- | __ )  _ __   ___   
- |  _ \ | '__| / _ \ 
- | |_) || |   | (_) | 
- |____/ |_|    \___/  
++----------------------------+
+|       B R O // TASK HQ      |
+|   YOUR PRODUCTIVITY WINGMAN |
++----------------------------+
 
-Hello, I'm Bro! What drink do you want?
-Goodbye!
+Yo, I'm Bro — your laid-back productivity wingman. What are we getting done today?
+Catch you later, bro. Keep crushing that to-do list!
 ```
 
 ## Test case: todo-add-and-list
 
 **Aim:** Verify that a todo command adds a task and list displays it.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/build/classes/java/main bro.Bro`
 
 **Inputs:**
 ```text
@@ -53,26 +52,25 @@ bye
 
 **Expected output:**
 ```text
-  ____                
- | __ )  _ __   ___   
- |  _ \ | '__| / _ \ 
- | |_) || |   | (_) | 
- |____/ |_|    \___/  
++----------------------------+
+|       B R O // TASK HQ      |
+|   YOUR PRODUCTIVITY WINGMAN |
++----------------------------+
 
-Hello, I'm Bro! What drink do you want?
-Got it. I've added: 
+Yo, I'm Bro — your laid-back productivity wingman. What are we getting done today?
+Nice, bro — I've logged:
 
 [T] [ ] read book
-Now you have1 tasks in the list
+Bro is keeping tabs on 1 task.
 1. [T] [ ] read book
-Goodbye!
+Catch you later, bro. Keep crushing that to-do list!
 ```
 
 ## Test case: deadline-add-and-list
 
 **Aim:** Verify that a deadline command stores an ISO date and displays it in a friendly format.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/build/classes/java/main bro.Bro`
 
 **Inputs:**
 ```text
@@ -83,26 +81,25 @@ bye
 
 **Expected output:**
 ```text
-  ____                
- | __ )  _ __   ___   
- |  _ \ | '__| / _ \ 
- | |_) || |   | (_) | 
- |____/ |_|    \___/  
++----------------------------+
+|       B R O // TASK HQ      |
+|   YOUR PRODUCTIVITY WINGMAN |
++----------------------------+
 
-Hello, I'm Bro! What drink do you want?
-Got it. I've added: 
+Yo, I'm Bro — your laid-back productivity wingman. What are we getting done today?
+Nice, bro — I've logged:
 
 [D] [ ] submit report(by: Oct 15 2019)
-Now you have 1 tasks in the list
+Bro is keeping tabs on 1 task.
 1. [D] [ ] submit report(by: Oct 15 2019)
-Goodbye!
+Catch you later, bro. Keep crushing that to-do list!
 ```
 
 ## Test case: deadline-date-time-add-and-list
 
 **Aim:** Verify that a day/month/year deadline time is parsed and displayed in a friendly format.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/build/classes/java/main bro.Bro`
 
 **Inputs:**
 ```text
@@ -113,26 +110,25 @@ bye
 
 **Expected output:**
 ```text
-  ____                
- | __ )  _ __   ___   
- |  _ \ | '__| / _ \ 
- | |_) || |   | (_) | 
- |____/ |_|    \___/  
++----------------------------+
+|       B R O // TASK HQ      |
+|   YOUR PRODUCTIVITY WINGMAN |
++----------------------------+
 
-Hello, I'm Bro! What drink do you want?
-Got it. I've added: 
+Yo, I'm Bro — your laid-back productivity wingman. What are we getting done today?
+Nice, bro — I've logged:
 
 [D] [ ] return book(by: Dec 2 2019 6:00PM)
-Now you have 1 tasks in the list
+Bro is keeping tabs on 1 task.
 1. [D] [ ] return book(by: Dec 2 2019 6:00PM)
-Goodbye!
+Catch you later, bro. Keep crushing that to-do list!
 ```
 
 ## Test case: deadline-leap-day
 
 **Aim:** Verify that a valid leap-day deadline is accepted and formatted correctly.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/build/classes/java/main bro.Bro`
 
 **Inputs:**
 ```text
@@ -143,26 +139,25 @@ bye
 
 **Expected output:**
 ```text
-  ____                
- | __ )  _ __   ___   
- |  _ \ | '__| / _ \ 
- | |_) || |   | (_) | 
- |____/ |_|    \___/  
++----------------------------+
+|       B R O // TASK HQ      |
+|   YOUR PRODUCTIVITY WINGMAN |
++----------------------------+
 
-Hello, I'm Bro! What drink do you want?
-Got it. I've added: 
+Yo, I'm Bro — your laid-back productivity wingman. What are we getting done today?
+Nice, bro — I've logged:
 
 [D] [ ] submit tax return(by: Feb 29 2020)
-Now you have 1 tasks in the list
+Bro is keeping tabs on 1 task.
 1. [D] [ ] submit tax return(by: Feb 29 2020)
-Goodbye!
+Catch you later, bro. Keep crushing that to-do list!
 ```
 
 ## Test case: deadline-midnight
 
 **Aim:** Verify that 24-hour midnight is formatted as 12:00AM.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/build/classes/java/main bro.Bro`
 
 **Inputs:**
 ```text
@@ -173,26 +168,25 @@ bye
 
 **Expected output:**
 ```text
-  ____                
- | __ )  _ __   ___   
- |  _ \ | '__| / _ \ 
- | |_) || |   | (_) | 
- |____/ |_|    \___/  
++----------------------------+
+|       B R O // TASK HQ      |
+|   YOUR PRODUCTIVITY WINGMAN |
++----------------------------+
 
-Hello, I'm Bro! What drink do you want?
-Got it. I've added: 
+Yo, I'm Bro — your laid-back productivity wingman. What are we getting done today?
+Nice, bro — I've logged:
 
 [D] [ ] reset password(by: Dec 2 2019 12:00AM)
-Now you have 1 tasks in the list
+Bro is keeping tabs on 1 task.
 1. [D] [ ] reset password(by: Dec 2 2019 12:00AM)
-Goodbye!
+Catch you later, bro. Keep crushing that to-do list!
 ```
 
 ## Test case: deadline-persists-after-restart
 
 **Aim:** Verify that a typed deadline and its completion state survive a chatbot restart.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/build/classes/java/main bro.Bro`
 
 **Inputs:**
 ```text
@@ -209,36 +203,34 @@ bye
 
 **Expected output:**
 ```text
-  ____                
- | __ )  _ __   ___   
- |  _ \ | '__| / _ \ 
- | |_) || |   | (_) | 
- |____/ |_|    \___/  
++----------------------------+
+|       B R O // TASK HQ      |
+|   YOUR PRODUCTIVITY WINGMAN |
++----------------------------+
 
-Hello, I'm Bro! What drink do you want?
-Got it. I've added: 
+Yo, I'm Bro — your laid-back productivity wingman. What are we getting done today?
+Nice, bro — I've logged:
 
 [D] [ ] return book(by: Dec 2 2019 6:00PM)
-Now you have 1 tasks in the list
-Ok this item is marked!
+Bro is keeping tabs on 1 task.
+Let's go, bro — this task is complete!
 [X] return book
-Goodbye!
-  ____                
- | __ )  _ __   ___   
- |  _ \ | '__| / _ \ 
- | |_) || |   | (_) | 
- |____/ |_|    \___/  
+Catch you later, bro. Keep crushing that to-do list!
++----------------------------+
+|       B R O // TASK HQ      |
+|   YOUR PRODUCTIVITY WINGMAN |
++----------------------------+
 
-Hello, I'm Bro! What drink do you want?
+Yo, I'm Bro — your laid-back productivity wingman. What are we getting done today?
 1. [D] [X] return book(by: Dec 2 2019 6:00PM)
-Goodbye!
+Catch you later, bro. Keep crushing that to-do list!
 ```
 
 ## Test case: event-add-and-list
 
 **Aim:** Verify that an event command stores and lists both event times.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/build/classes/java/main bro.Bro`
 
 **Inputs:**
 ```text
@@ -249,26 +241,25 @@ bye
 
 **Expected output:**
 ```text
-  ____                
- | __ )  _ __   ___   
- |  _ \ | '__| / _ \ 
- | |_) || |   | (_) | 
- |____/ |_|    \___/  
++----------------------------+
+|       B R O // TASK HQ      |
+|   YOUR PRODUCTIVITY WINGMAN |
++----------------------------+
 
-Hello, I'm Bro! What drink do you want?
-Got it. I've added: 
+Yo, I'm Bro — your laid-back productivity wingman. What are we getting done today?
+Nice, bro — I've logged:
 
 [E] [ ] project meeting(from: 2pm to: 4pm)
-Now you have 1 tasks in the list
+Bro is keeping tabs on 1 task.
 1. [E] [ ] project meeting(from: 2pm to: 4pm)
-Goodbye!
+Catch you later, bro. Keep crushing that to-do list!
 ```
 
 ## Test case: mark-a-todo
 
 **Aim:** Verify that mark changes the selected todo and list shows it as complete.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/build/classes/java/main bro.Bro`
 
 **Inputs:**
 ```text
@@ -280,28 +271,27 @@ bye
 
 **Expected output:**
 ```text
-  ____                
- | __ )  _ __   ___   
- |  _ \ | '__| / _ \ 
- | |_) || |   | (_) | 
- |____/ |_|    \___/  
++----------------------------+
+|       B R O // TASK HQ      |
+|   YOUR PRODUCTIVITY WINGMAN |
++----------------------------+
 
-Hello, I'm Bro! What drink do you want?
-Got it. I've added: 
+Yo, I'm Bro — your laid-back productivity wingman. What are we getting done today?
+Nice, bro — I've logged:
 
 [T] [ ] read book
-Now you have1 tasks in the list
-Ok this item is marked!
+Bro is keeping tabs on 1 task.
+Let's go, bro — this task is complete!
 [X] read book
 1. [T] [X] read book
-Goodbye!
+Catch you later, bro. Keep crushing that to-do list!
 ```
 
 ## Test case: empty-todo
 
 **Aim:** Verify that an empty todo is rejected and the session continues.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/build/classes/java/main bro.Bro`
 
 **Inputs:**
 ```text
@@ -312,24 +302,23 @@ bye
 
 **Expected output:**
 ```text
-  ____                
- | __ )  _ __   ___   
- |  _ \ | '__| / _ \ 
- | |_) || |   | (_) | 
- |____/ |_|    \___/  
++----------------------------+
+|       B R O // TASK HQ      |
+|   YOUR PRODUCTIVITY WINGMAN |
++----------------------------+
 
-Hello, I'm Bro! What drink do you want?
-    ____________________________________________________________
-     A todo needs a description. Try: todo <description>.
-    ____________________________________________________________
-Goodbye!
+Yo, I'm Bro — your laid-back productivity wingman. What are we getting done today?
+    ============================================================
+     Bro says: I need a todo description. Try: todo <description>.
+    ============================================================
+Catch you later, bro. Keep crushing that to-do list!
 ```
 
 ## Test case: unknown-command
 
 **Aim:** Verify that an unrecognised command is rejected without terminating Bro.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/build/classes/java/main bro.Bro`
 
 **Inputs:**
 ```text
@@ -339,24 +328,23 @@ bye
 
 **Expected output:**
 ```text
-  ____                
- | __ )  _ __   ___   
- |  _ \ | '__| / _ \ 
- | |_) || |   | (_) | 
- |____/ |_|    \___/  
++----------------------------+
+|       B R O // TASK HQ      |
+|   YOUR PRODUCTIVITY WINGMAN |
++----------------------------+
 
-Hello, I'm Bro! What drink do you want?
-    ____________________________________________________________
-     I don't recognize that command. Try todo, deadline, event, list, find, mark, unmark, delete, or bye.
-    ____________________________________________________________
-Goodbye!
+Yo, I'm Bro — your laid-back productivity wingman. What are we getting done today?
+    ============================================================
+     Bro says: I don't recognize that command. Try todo, deadline, event, list, find, mark, unmark, delete, or bye.
+    ============================================================
+Catch you later, bro. Keep crushing that to-do list!
 ```
 
 ## Test case: find-task-by-keyword
 
 **Aim:** Verify that find displays matching task descriptions in list order and ignores letter case.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/build/classes/java/main bro.Bro`
 
 **Inputs:**
 ```text
@@ -369,38 +357,37 @@ bye
 
 **Expected output:**
 ```text
-  ____                
- | __ )  _ __   ___   
- |  _ \ | '__| / _ \ 
- | |_) || |   | (_) | 
- |____/ |_|    \___/  
++----------------------------+
+|       B R O // TASK HQ      |
+|   YOUR PRODUCTIVITY WINGMAN |
++----------------------------+
 
-Hello, I'm Bro! What drink do you want?
-Got it. I've added: 
+Yo, I'm Bro — your laid-back productivity wingman. What are we getting done today?
+Nice, bro — I've logged:
 
 [T] [ ] read book
-Now you have1 tasks in the list
-Got it. I've added: 
+Bro is keeping tabs on 1 task.
+Nice, bro — I've logged:
 
 [D] [ ] return book(by: Oct 15 2019)
-Now you have 2 tasks in the list
-Got it. I've added: 
+Bro is keeping tabs on 2 tasks.
+Nice, bro — I've logged:
 
 [T] [ ] write notes
-Now you have3 tasks in the list
-    ____________________________________________________________
-     Here are the matching tasks in your list:
+Bro is keeping tabs on 3 tasks.
+    ============================================================
+     Bro found these matching tasks:
 1. [T] [ ] read book
 2. [D] [ ] return book(by: Oct 15 2019)
-    ____________________________________________________________
-Goodbye!
+    ============================================================
+Catch you later, bro. Keep crushing that to-do list!
 ```
 
 ## Test case: malformed-deadline
 
 **Aim:** Verify that a deadline without a /by date gives a useful usage hint.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/build/classes/java/main bro.Bro`
 
 **Inputs:**
 ```text
@@ -410,24 +397,23 @@ bye
 
 **Expected output:**
 ```text
-  ____                
- | __ )  _ __   ___   
- |  _ \ | '__| / _ \ 
- | |_) || |   | (_) | 
- |____/ |_|    \___/  
++----------------------------+
+|       B R O // TASK HQ      |
+|   YOUR PRODUCTIVITY WINGMAN |
++----------------------------+
 
-Hello, I'm Bro! What drink do you want?
-    ____________________________________________________________
-     Use: deadline <description> /by <yyyy-MM-dd> or <d/M/yyyy HHmm>.
-    ____________________________________________________________
-Goodbye!
+Yo, I'm Bro — your laid-back productivity wingman. What are we getting done today?
+    ============================================================
+     Bro says: My format: deadline <description> /by <yyyy-MM-dd> or <d/M/yyyy HHmm>.
+    ============================================================
+Catch you later, bro. Keep crushing that to-do list!
 ```
 
 ## Test case: invalid-deadline-date
 
 **Aim:** Verify that an invalid calendar date is rejected without adding a task.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/build/classes/java/main bro.Bro`
 
 **Inputs:**
 ```text
@@ -437,24 +423,23 @@ bye
 
 **Expected output:**
 ```text
-  ____                
- | __ )  _ __   ___   
- |  _ \ | '__| / _ \ 
- | |_) || |   | (_) | 
- |____/ |_|    \___/  
++----------------------------+
+|       B R O // TASK HQ      |
+|   YOUR PRODUCTIVITY WINGMAN |
++----------------------------+
 
-Hello, I'm Bro! What drink do you want?
-    ____________________________________________________________
-     Use: deadline <description> /by <yyyy-MM-dd> or <d/M/yyyy HHmm>.
-    ____________________________________________________________
-Goodbye!
+Yo, I'm Bro — your laid-back productivity wingman. What are we getting done today?
+    ============================================================
+     Bro says: My format: deadline <description> /by <yyyy-MM-dd> or <d/M/yyyy HHmm>.
+    ============================================================
+Catch you later, bro. Keep crushing that to-do list!
 ```
 
 ## Test case: invalid-iso-deadline-date
 
 **Aim:** Verify that a non-leap-year ISO date is rejected.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/build/classes/java/main bro.Bro`
 
 **Inputs:**
 ```text
@@ -464,24 +449,23 @@ bye
 
 **Expected output:**
 ```text
-  ____                
- | __ )  _ __   ___   
- |  _ \ | '__| / _ \ 
- | |_) || |   | (_) | 
- |____/ |_|    \___/  
++----------------------------+
+|       B R O // TASK HQ      |
+|   YOUR PRODUCTIVITY WINGMAN |
++----------------------------+
 
-Hello, I'm Bro! What drink do you want?
-    ____________________________________________________________
-     Use: deadline <description> /by <yyyy-MM-dd> or <d/M/yyyy HHmm>.
-    ____________________________________________________________
-Goodbye!
+Yo, I'm Bro — your laid-back productivity wingman. What are we getting done today?
+    ============================================================
+     Bro says: My format: deadline <description> /by <yyyy-MM-dd> or <d/M/yyyy HHmm>.
+    ============================================================
+Catch you later, bro. Keep crushing that to-do list!
 ```
 
 ## Test case: invalid-deadline-time
 
 **Aim:** Verify that an invalid 24-hour time is rejected.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/build/classes/java/main bro.Bro`
 
 **Inputs:**
 ```text
@@ -491,24 +475,23 @@ bye
 
 **Expected output:**
 ```text
-  ____                
- | __ )  _ __   ___   
- |  _ \ | '__| / _ \ 
- | |_) || |   | (_) | 
- |____/ |_|    \___/  
++----------------------------+
+|       B R O // TASK HQ      |
+|   YOUR PRODUCTIVITY WINGMAN |
++----------------------------+
 
-Hello, I'm Bro! What drink do you want?
-    ____________________________________________________________
-     Use: deadline <description> /by <yyyy-MM-dd> or <d/M/yyyy HHmm>.
-    ____________________________________________________________
-Goodbye!
+Yo, I'm Bro — your laid-back productivity wingman. What are we getting done today?
+    ============================================================
+     Bro says: My format: deadline <description> /by <yyyy-MM-dd> or <d/M/yyyy HHmm>.
+    ============================================================
+Catch you later, bro. Keep crushing that to-do list!
 ```
 
 ## Test case: malformed-event
 
 **Aim:** Verify that an event missing its /to component gives a useful usage hint.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/build/classes/java/main bro.Bro`
 
 **Inputs:**
 ```text
@@ -518,24 +501,23 @@ bye
 
 **Expected output:**
 ```text
-  ____                
- | __ )  _ __   ___   
- |  _ \ | '__| / _ \ 
- | |_) || |   | (_) | 
- |____/ |_|    \___/  
++----------------------------+
+|       B R O // TASK HQ      |
+|   YOUR PRODUCTIVITY WINGMAN |
++----------------------------+
 
-Hello, I'm Bro! What drink do you want?
-    ____________________________________________________________
-     Use: event <description> /from <start> /to <end>.
-    ____________________________________________________________
-Goodbye!
+Yo, I'm Bro — your laid-back productivity wingman. What are we getting done today?
+    ============================================================
+     Bro says: My format: event <description> /from <start> /to <end>.
+    ============================================================
+Catch you later, bro. Keep crushing that to-do list!
 ```
 
 ## Test case: invalid-mark-index
 
 **Aim:** Verify that a non-numeric mark index is reported clearly.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/build/classes/java/main bro.Bro`
 
 **Inputs:**
 ```text
@@ -546,28 +528,27 @@ bye
 
 **Expected output:**
 ```text
-  ____                
- | __ )  _ __   ___   
- |  _ \ | '__| / _ \ 
- | |_) || |   | (_) | 
- |____/ |_|    \___/  
++----------------------------+
+|       B R O // TASK HQ      |
+|   YOUR PRODUCTIVITY WINGMAN |
++----------------------------+
 
-Hello, I'm Bro! What drink do you want?
-Got it. I've added: 
+Yo, I'm Bro — your laid-back productivity wingman. What are we getting done today?
+Nice, bro — I've logged:
 
 [T] [ ] read book
-Now you have1 tasks in the list
-    ____________________________________________________________
-     Task number must be a positive whole number.
-    ____________________________________________________________
-Goodbye!
+Bro is keeping tabs on 1 task.
+    ============================================================
+     Bro says: I need a positive whole task number.
+    ============================================================
+Catch you later, bro. Keep crushing that to-do list!
 ```
 
 ## Test case: out-of-range-mark
 
 **Aim:** Verify that a mark index outside the task list is rejected.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/build/classes/java/main bro.Bro`
 
 **Inputs:**
 ```text
@@ -578,28 +559,27 @@ bye
 
 **Expected output:**
 ```text
-  ____                
- | __ )  _ __   ___   
- |  _ \ | '__| / _ \ 
- | |_) || |   | (_) | 
- |____/ |_|    \___/  
++----------------------------+
+|       B R O // TASK HQ      |
+|   YOUR PRODUCTIVITY WINGMAN |
++----------------------------+
 
-Hello, I'm Bro! What drink do you want?
-Got it. I've added: 
+Yo, I'm Bro — your laid-back productivity wingman. What are we getting done today?
+Nice, bro — I've logged:
 
 [T] [ ] read book
-Now you have1 tasks in the list
-    ____________________________________________________________
-     Task number must be between 1 and 1.
-    ____________________________________________________________
-Goodbye!
+Bro is keeping tabs on 1 task.
+    ============================================================
+     Bro says: I can only target tasks 1 through 1.
+    ============================================================
+Catch you later, bro. Keep crushing that to-do list!
 ```
 
 ## Test case: invalid-unmark-index
 
 **Aim:** Verify that unmark validates its task index too.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/build/classes/java/main bro.Bro`
 
 **Inputs:**
 ```text
@@ -610,28 +590,27 @@ bye
 
 **Expected output:**
 ```text
-  ____                
- | __ )  _ __   ___   
- |  _ \ | '__| / _ \ 
- | |_) || |   | (_) | 
- |____/ |_|    \___/  
++----------------------------+
+|       B R O // TASK HQ      |
+|   YOUR PRODUCTIVITY WINGMAN |
++----------------------------+
 
-Hello, I'm Bro! What drink do you want?
-Got it. I've added: 
+Yo, I'm Bro — your laid-back productivity wingman. What are we getting done today?
+Nice, bro — I've logged:
 
 [T] [ ] read book
-Now you have1 tasks in the list
-    ____________________________________________________________
-     Task number must be a positive whole number.
-    ____________________________________________________________
-Goodbye!
+Bro is keeping tabs on 1 task.
+    ============================================================
+     Bro says: I need a positive whole task number.
+    ============================================================
+Catch you later, bro. Keep crushing that to-do list!
 ```
 
 ## Test case: blank-command
 
 **Aim:** Verify that a blank line is handled as invalid input rather than a task.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/build/classes/java/main bro.Bro`
 
 **Inputs:**
 ```text
@@ -641,24 +620,23 @@ bye
 
 **Expected output:**
 ```text
-  ____                
- | __ )  _ __   ___   
- |  _ \ | '__| / _ \ 
- | |_) || |   | (_) | 
- |____/ |_|    \___/  
++----------------------------+
+|       B R O // TASK HQ      |
+|   YOUR PRODUCTIVITY WINGMAN |
++----------------------------+
 
-Hello, I'm Bro! What drink do you want?
-    ____________________________________________________________
-     Please enter a command.
-    ____________________________________________________________
-Goodbye!
+Yo, I'm Bro — your laid-back productivity wingman. What are we getting done today?
+    ============================================================
+     Bro says: I'm ready when you are—enter a command.
+    ============================================================
+Catch you later, bro. Keep crushing that to-do list!
 ```
 
 ## Test case: delete-middle-task
 
 **Aim:** Verify that delete removes the selected task and renumbers the remaining list.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/build/classes/java/main bro.Bro`
 
 **Inputs:**
 ```text
@@ -672,38 +650,37 @@ bye
 
 **Expected output:**
 ```text
-  ____                
- | __ )  _ __   ___   
- |  _ \ | '__| / _ \ 
- | |_) || |   | (_) | 
- |____/ |_|    \___/  
++----------------------------+
+|       B R O // TASK HQ      |
+|   YOUR PRODUCTIVITY WINGMAN |
++----------------------------+
 
-Hello, I'm Bro! What drink do you want?
-Got it. I've added: 
+Yo, I'm Bro — your laid-back productivity wingman. What are we getting done today?
+Nice, bro — I've logged:
 
 [T] [ ] read book
-Now you have1 tasks in the list
-Got it. I've added: 
+Bro is keeping tabs on 1 task.
+Nice, bro — I've logged:
 
 [D] [ ] return book(by: Jun 6 2019)
-Now you have 2 tasks in the list
-Got it. I've added: 
+Bro is keeping tabs on 2 tasks.
+Nice, bro — I've logged:
 
 [E] [ ] project meeting(from: Aug 6th 2pm to: 4pm)
-Now you have 3 tasks in the list
-Noted. I've removed:
+Bro is keeping tabs on 3 tasks.
+No worries, bro — I've cleared:
 [D] [ ] return book(by: Jun 6 2019)
-Now you have 2 tasks in the list
+Bro is keeping tabs on 2 tasks.
 1. [T] [ ] read book
 2. [E] [ ] project meeting(from: Aug 6th 2pm to: 4pm)
-Goodbye!
+Catch you later, bro. Keep crushing that to-do list!
 ```
 
 ## Test case: delete-missing-index
 
 **Aim:** Verify that delete without a task number gives a usage hint.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/build/classes/java/main bro.Bro`
 
 **Inputs:**
 ```text
@@ -714,28 +691,27 @@ bye
 
 **Expected output:**
 ```text
-  ____                
- | __ )  _ __   ___   
- |  _ \ | '__| / _ \ 
- | |_) || |   | (_) | 
- |____/ |_|    \___/  
++----------------------------+
+|       B R O // TASK HQ      |
+|   YOUR PRODUCTIVITY WINGMAN |
++----------------------------+
 
-Hello, I'm Bro! What drink do you want?
-Got it. I've added: 
+Yo, I'm Bro — your laid-back productivity wingman. What are we getting done today?
+Nice, bro — I've logged:
 
 [T] [ ] read book
-Now you have1 tasks in the list
-    ____________________________________________________________
-     Use: delete <task number>.
-    ____________________________________________________________
-Goodbye!
+Bro is keeping tabs on 1 task.
+    ============================================================
+     Bro says: I need a task number. Use: delete <task number>.
+    ============================================================
+Catch you later, bro. Keep crushing that to-do list!
 ```
 
 ## Test case: delete-out-of-range
 
 **Aim:** Verify that delete rejects an index beyond the current task list.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/build/classes/java/main bro.Bro`
 
 **Inputs:**
 ```text
@@ -746,28 +722,27 @@ bye
 
 **Expected output:**
 ```text
-  ____                
- | __ )  _ __   ___   
- |  _ \ | '__| / _ \ 
- | |_) || |   | (_) | 
- |____/ |_|    \___/  
++----------------------------+
+|       B R O // TASK HQ      |
+|   YOUR PRODUCTIVITY WINGMAN |
++----------------------------+
 
-Hello, I'm Bro! What drink do you want?
-Got it. I've added: 
+Yo, I'm Bro — your laid-back productivity wingman. What are we getting done today?
+Nice, bro — I've logged:
 
 [T] [ ] read book
-Now you have1 tasks in the list
-    ____________________________________________________________
-     Task number must be between 1 and 1.
-    ____________________________________________________________
-Goodbye!
+Bro is keeping tabs on 1 task.
+    ============================================================
+     Bro says: I can only target tasks 1 through 1.
+    ============================================================
+Catch you later, bro. Keep crushing that to-do list!
 ```
 
 ## Test case: delete-empty-list
 
 **Aim:** Verify that delete on an empty list reports the problem without crashing.
 
-**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/out/production bro.Bro`
+**Run command:** `java -Duser.dir={test_dir} -cp {workspace}/build/classes/java/main bro.Bro`
 
 **Inputs:**
 ```text
@@ -777,15 +752,14 @@ bye
 
 **Expected output:**
 ```text
-  ____                
- | __ )  _ __   ___   
- |  _ \ | '__| / _ \ 
- | |_) || |   | (_) | 
- |____/ |_|    \___/  
++----------------------------+
+|       B R O // TASK HQ      |
+|   YOUR PRODUCTIVITY WINGMAN |
++----------------------------+
 
-Hello, I'm Bro! What drink do you want?
-    ____________________________________________________________
-     There are no tasks to delete yet.
-    ____________________________________________________________
-Goodbye!
+Yo, I'm Bro — your laid-back productivity wingman. What are we getting done today?
+    ============================================================
+     Bro says: I have no tasks to delete yet.
+    ============================================================
+Catch you later, bro. Keep crushing that to-do list!
 ```

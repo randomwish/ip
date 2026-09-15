@@ -48,7 +48,7 @@ public class Storage {
             }
             return new TaskList(tasks);
         } catch (IOException exception) {
-            throw new BroException("I could not load your saved tasks.");
+            throw new BroException("I couldn't load the saved task list.");
         }
     }
 
@@ -67,7 +67,7 @@ public class Storage {
 
             Files.write(filePath, lines, StandardCharsets.UTF_8);
         } catch (IOException exception) {
-            throw new BroException("I could not save your tasks.");
+            throw new BroException("I couldn't save the task list.");
         }
     }
 

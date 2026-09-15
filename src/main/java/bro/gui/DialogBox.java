@@ -1,5 +1,6 @@
 package bro.gui;
 
+import bro.Personality;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -37,7 +38,7 @@ public class DialogBox extends HBox {
 
     /** Creates a left-aligned dialog for Bro's response. */
     public static DialogBox getBroDialog(String text) {
-        return new DialogBox(text, "Bro", false);
+        return new DialogBox(text, Personality.PERSONA_NAME, false);
     }
 
     /** Creates a circular initial badge that does not require external image files. */

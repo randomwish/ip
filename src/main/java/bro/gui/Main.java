@@ -3,6 +3,7 @@ package bro.gui;
 import java.io.IOException;
 
 import bro.Bro;
+import bro.Personality;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -12,7 +13,7 @@ import javafx.stage.Stage;
 /** Configures and displays Bro's primary JavaFX stage. */
 public class Main extends Application {
     private static final String MAIN_WINDOW_FXML = "/view/MainWindow.fxml";
-    private static final String WINDOW_TITLE = "Bro";
+    private static final String WINDOW_TITLE = Personality.PERSONA_NAME + " — Task HQ";
     private static final double MIN_WINDOW_HEIGHT = 520;
     private static final double MIN_WINDOW_WIDTH = 380;
 

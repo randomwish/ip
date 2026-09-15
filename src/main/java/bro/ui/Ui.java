@@ -1,8 +1,8 @@
 package bro.ui;
 
+import bro.Personality;
 import bro.task.Task;
 import bro.task.TaskList;
-import bro.task.ToDos;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -12,14 +12,13 @@ import java.util.Scanner;
 
 /** Handles Bro's console input and output. */
 public class Ui {
-    private static final String MESSAGE_BORDER = "    ____________________________________________________________";
-    private static final String WELCOME_MESSAGE = "Hello, I'm Bro! What drink do you want?";
+    private static final String MESSAGE_BORDER = "    ============================================================";
+    private static final String WELCOME_MESSAGE = Personality.PERSONA_WELCOME_MESSAGE;
     private static final String BANNER = """
-              ____               \s
-             | __ )  _ __   ___  \s
-             |  _ \\ | '__| / _ \\\s
-             | |_) || |   | (_) |\s
-             |____/ |_|    \\___/ \s
+            +----------------------------+
+            |       B R O // TASK HQ      |
+            |   YOUR PRODUCTIVITY WINGMAN |
+            +----------------------------+
             """;
 
     private final Scanner scanner;
@@ -58,7 +57,8 @@ public class Ui {
 
     /** Shows a recoverable error message. */
     public String showError(String message) {
-        return show(MESSAGE_BORDER + "\n     " + message + "\n" + MESSAGE_BORDER + "\n");
+        return show(MESSAGE_BORDER + "\n     " + Personality.PERSONA_NAME + " says: " + message + "\n"
+                + MESSAGE_BORDER + "\n");
     }
 
     /** Shows the task list in insertion order. */
@@ -77,7 +77,7 @@ public class Ui {
      */
     public String showFindResults(List<Task> matchingTasks) {
         StringBuilder message = new StringBuilder(MESSAGE_BORDER)
-                .append("\n     Here are the matching tasks in your list:\n");
+                .append("\n     Bro found these matching tasks:\n");
         for (int i = 0; i < matchingTasks.size(); i++) {
             message.append(i + 1).append(". ").append(matchingTasks.get(i)).append('\n');
         }
@@ -87,26 +87,29 @@ public class Ui {
 
     /** Shows a confirmation and the newly added task. */
     public String showTaskAdded(Task task, int taskCount) {
-        String countPrefix = task instanceof ToDos ? "Now you have" : "Now you have ";
-        return show("Got it. I've added: \n\n" + task + "\n"
-                + countPrefix + taskCount + " tasks in the list\n");
+        String taskLabel = taskCount == 1 ? "task" : "tasks";
+        return show("Nice, bro — I've logged:\n\n" + task + "\n"
+                + Personality.PERSONA_NAME + " is keeping tabs on " + taskCount + " " + taskLabel + ".\n");
     }
 
     /** Shows the result of marking or unmarking a task. */
     public String showTaskStatusChanged(boolean isDone, Task task) {
-        String statusMessage = isDone ? "Ok this item is marked!" : "Ok this item is not marked!";
+        String statusMessage = isDone
+                ? "Let's go, bro — this task is complete!"
+                : "No stress, bro — this task is marked incomplete.";
         return show(statusMessage + "\n[" + task.showDone() + "] " + task.getDescription() + "\n");
     }
 
     /** Shows the result of deleting a task. */
     public String showTaskDeleted(Task task, int remainingTaskCount) {
-        return show("Noted. I've removed:\n" + task + "\nNow you have "
-                + remainingTaskCount + " tasks in the list\n");
+        String taskLabel = remainingTaskCount == 1 ? "task" : "tasks";
+        return show("No worries, bro — I've cleared:\n" + task + "\n"
+                + Personality.PERSONA_NAME + " is keeping tabs on " + remainingTaskCount + " " + taskLabel + ".\n");
     }
 
     /** Shows the session closing message. */
     public String showGoodbye() {
-        return show("Goodbye!\n");
+        return show(Personality.PERSONA_GOODBYE_MESSAGE + "\n");
     }
 
     /** Writes and returns a fully formatted response. */

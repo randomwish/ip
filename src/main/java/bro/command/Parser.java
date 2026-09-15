@@ -16,13 +16,14 @@ public class Parser {
     private static final DateTimeFormatter DATE_TIME_INPUT_FORMAT = DateTimeFormatter
             .ofPattern("d/M/uuuu HHmm")
             .withResolverStyle(ResolverStyle.STRICT);
-    private static final String DEADLINE_USAGE = "Use: deadline <description> /by <yyyy-MM-dd> "
+    private static final String DEADLINE_USAGE = "My format: deadline <description> /by <yyyy-MM-dd> "
             + "or <d/M/yyyy HHmm>.";
+    private static final String EVENT_USAGE = "My format: event <description> /from <start> /to <end>.";
 
     /** Parses a line into its lower-case action word and remaining arguments. */
     public Command parseCommand(String userInput) throws BroException {
         if (userInput == null || userInput.isBlank()) {
-            throw new BroException("Please enter a command.");
+            throw new BroException("I'm ready when you are—enter a command.");
         }
 
         String[] commandParts = userInput.trim().split("\\s+", 2);
@@ -42,7 +43,7 @@ public class Parser {
     /** Rejects arguments for a command that should stand alone. */
     public void ensureNoArguments(Command command, String commandName) throws BroException {
         if (command.hasArguments()) {
-            throw new BroException("The " + commandName + " command does not take arguments. Try: "
+            throw new BroException("The " + commandName + " command flies solo, bro. Try: "
                     + commandName + ".");
         }
     }
@@ -60,15 +61,15 @@ public class Parser {
 
     /** Parses an event command into an event task. */
     public Events parseEvent(Command command) throws BroException {
-        String rest = requireArgument(command, "Use: event <description> /from <start> /to <end>.");
+        String rest = requireArgument(command, EVENT_USAGE);
         String[] fromSplit = rest.split("\\s*/from\\s*", -1);
         if (fromSplit.length != 2 || fromSplit[0].isBlank()) {
-            throw new BroException("Use: event <description> /from <start> /to <end>.");
+            throw new BroException(EVENT_USAGE);
         }
 
         String[] toSplit = fromSplit[1].split("\\s*/to\\s*", -1);
         if (toSplit.length != 2 || toSplit[0].isBlank() || toSplit[1].isBlank()) {
-            throw new BroException("Use: event <description> /from <start> /to <end>.");
+            throw new BroException(EVENT_USAGE);
         }
 
         return new Events(toSplit[0].trim(), toSplit[1].trim(), fromSplit[0].trim());
@@ -76,25 +77,26 @@ public class Parser {
 
     /** Parses a one-based task number and validates it against the current task count. */
     public int parseTaskIndex(Command command, String operation, int taskCount) throws BroException {
-        String argument = requireArgument(command, "Use: " + operation + " <task number>.");
+        String usageMessage = "I need a task number. Use: " + operation + " <task number>.";
+        String argument = requireArgument(command, usageMessage);
         if (argument.split("\\s+").length != 1) {
-            throw new BroException("Use: " + operation + " <task number>.");
+            throw new BroException(usageMessage);
         }
 
         int index;
         try {
             index = Integer.parseInt(argument);
         } catch (NumberFormatException exception) {
-            throw new BroException("Task number must be a positive whole number.");
+            throw new BroException("I need a positive whole task number.");
         }
         if (index < 1) {
-            throw new BroException("Task number must be a positive whole number.");
+            throw new BroException("I need a positive whole task number.");
         }
         if (taskCount == 0) {
-            throw new BroException("There are no tasks to " + operation + " yet.");
+            throw new BroException("I have no tasks to " + operation + " yet.");
         }
         if (index > taskCount) {
-            throw new BroException("Task number must be between 1 and " + taskCount + ".");
+            throw new BroException("I can only target tasks 1 through " + taskCount + ".");
         }
         assert index >= 1 && index <= taskCount : "A parsed task number must be within the task list";
         return index;

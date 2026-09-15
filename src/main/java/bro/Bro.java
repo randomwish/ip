@@ -42,7 +42,7 @@ public class Bro {
         this.isLoaded = false;
     }
 
-    /** Runs the chatbot until the user says goodbye or closes the input. */
+    /** Runs Bro until the user signs off or closes the input. */
     public void run() {
         ui.showWelcome();
         loadTasks();
@@ -138,7 +138,7 @@ public class Bro {
 
     /** Adds a todo after checking that its description is present. */
     private String addTodo(Command command) throws BroException {
-        String description = parser.requireArgument(command, "A todo needs a description. "
+        String description = parser.requireArgument(command, "I need a todo description. "
                 + "Try: todo <description>.");
         ToDos newToDo = new ToDos(description);
         tasks.add(newToDo);

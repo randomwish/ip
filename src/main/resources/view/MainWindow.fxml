@@ -19,8 +19,14 @@
             <padding>
                 <Insets bottom="14.0" left="20.0" right="20.0" top="16.0" />
             </padding>
-            <Label styleClass="title" text="Bro" />
-            <Label styleClass="subtitle" text="Your task-managing chatbot" />
+            <HBox alignment="CENTER_LEFT" spacing="12.0">
+                <Label styleClass="bro-mark" text="✦" />
+                <VBox spacing="2.0">
+                    <Label styleClass="title" text="Bro" />
+                    <Label styleClass="subtitle" text="Your laid-back productivity wingman" />
+                </VBox>
+            </HBox>
+            <Label styleClass="status" text="BRO // READY TO ROLL" />
         </VBox>
     </top>
     <center>
@@ -42,8 +48,8 @@
                 <Insets bottom="14.0" left="14.0" right="14.0" top="14.0" />
             </padding>
             <TextField fx:id="userInput" onAction="#handleUserInput"
-                       promptText="Type a command…" HBox.hgrow="ALWAYS" />
-            <Button fx:id="sendButton" defaultButton="true" onAction="#handleUserInput" text="Send" />
+                       promptText="Tell Bro what to do…" HBox.hgrow="ALWAYS" />
+            <Button fx:id="sendButton" defaultButton="true" onAction="#handleUserInput" text="Send it" />
         </HBox>
     </bottom>
 </BorderPane>

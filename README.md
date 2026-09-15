@@ -1,6 +1,7 @@
-# Duke project template
+# Bro task manager
 
-This is a project template for a greenfield Java project. It's named after the Java mascot _Duke_. Given below are instructions on how to use it.
+Bro is a friendly task-management chatbot with the energy of a laid-back productivity wingman.
+The instructions below explain how to set up and run it.
 
 ## Setting up in Intellij
 
@@ -13,15 +14,14 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
    1. If there are any further prompts, accept the defaults.
 1. Configure the project to use **JDK 25** (not other versions) as explained in [here](https://www.jetbrains.com/help/idea/sdk.html#set-up-jdk).<br>
    In the same dialog, set the **Project language level** field to the `SDK default` option.
-1. After that, locate the `src/main/java/bro/Bro.java` file, right-click it, and choose `Run Bro.main()` (if the code editor is showing compile errors, try restarting the IDE). If the setup is correct, you should see the Bro greeting.
+1. After that, locate the `src/main/java/bro/Bro.java` file, right-click it, and choose `Run Bro.main()` (if the code editor is showing compile errors, try restarting the IDE). If the setup is correct, you should see Bro's greeting.
    ```text
-  ____
- | __ )  _ __   ___
- |  _ \ | '__| / _ \
- | |_) || |   | (_) |
- |____/ |_|    \___/
+ +----------------------------+
+ |       B R O // TASK HQ      |
+ |   YOUR PRODUCTIVITY WINGMAN |
+ +----------------------------+
 
-Hello, I'm Bro! What drink do you want?
+Yo, I'm Bro — your laid-back productivity wingman. What are we getting done today?
    ```
 
 **Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.

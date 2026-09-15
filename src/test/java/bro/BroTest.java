@@ -21,7 +21,7 @@ class BroTest {
 
         String welcomeMessage = bro.getWelcomeMessage();
 
-        assertTrue(welcomeMessage.startsWith("Hello, I'm Bro!"));
+        assertTrue(welcomeMessage.startsWith("Yo, I'm Bro —"));
         assertFalse(welcomeMessage.contains("____"));
     }
 
@@ -48,7 +48,7 @@ class BroTest {
         String goodbyeResponse = bro.getResponse("  BYE  ");
 
         assertTrue(invalidResponse.contains("I don't recognize that command"));
-        assertTrue(goodbyeResponse.contains("Goodbye!"));
+        assertTrue(goodbyeResponse.contains("Catch you later, bro."));
         assertTrue(bro.isExitCommand("  BYE  "));
     }
 }

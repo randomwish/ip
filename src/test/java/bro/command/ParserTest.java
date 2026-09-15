@@ -66,7 +66,7 @@ class ParserTest {
         BroException exception = assertThrows(BroException.class,
                 () -> parser.ensureNoArguments(new Command("list", "all"), "list"));
 
-        assertEquals("The list command does not take arguments. Try: list.", exception.getMessage());
+        assertEquals("The list command flies solo, bro. Try: list.", exception.getMessage());
     }
 
     /** An event command separates its description, start time, and end time. */
