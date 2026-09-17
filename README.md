@@ -38,17 +38,19 @@ JAR file. From the project root, run:
 On Windows, use `gradlew.bat shadowJar` instead. The generated file is:
 
 ```text
-build/libs/duke.jar
+build/libs/bro.jar
 ```
 
 The `build/` directory contains generated files and should not be committed.
-To test distribution behavior, copy `duke.jar` into an empty folder, open a
+To test distribution behavior, copy `bro.jar` into an empty folder, open a
 command window in that folder, and run:
 
 ```bash
-java -jar "duke.jar"
+java -jar "bro.jar"
 ```
 
-Bro stores its task data in `data/duke.txt` relative to the folder from which
+Bro stores its task data in `data/bro.txt` relative to the folder from which
 the JAR is run. To distribute a release, create a GitHub release and attach
-`build/libs/duke.jar` as a binary instead of committing the JAR to Git.
+`build/libs/bro.jar` as a binary instead of committing the JAR to Git.
+
+DISCLAIMER: Codex was used to develop part of this project

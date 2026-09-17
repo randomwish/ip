@@ -63,7 +63,7 @@ jar {
 }
 
 shadowJar {
-    archiveFileName = 'duke.jar'
+    archiveFileName = 'bro.jar'
 
     manifest {
         attributes 'Main-Class': 'bro.Launcher'

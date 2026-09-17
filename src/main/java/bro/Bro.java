@@ -15,7 +15,7 @@ import java.util.Objects;
 
 /** Coordinates Bro's user interface, command parser, task list, and storage. */
 public class Bro {
-    private static final String DEFAULT_FILE_PATH = "data/duke.txt";
+    private static final String DEFAULT_FILE_PATH = "data/bro.txt";
 
     private final Storage storage;
     private final Ui ui;
